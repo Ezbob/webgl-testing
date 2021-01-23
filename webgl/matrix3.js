@@ -58,3 +58,11 @@ export function multiply(mat_a, mat_b) {
         b20 * a02 + b21 * a12 + b22 * a22,
     ];
 }
+
+export function identity() {
+    return [
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+    ];
+}

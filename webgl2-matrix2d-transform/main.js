@@ -58,14 +58,20 @@ function drawScene(gl, vao, position, data) {
     let rotationMatrix = m3.rotation(data.rotation)
     let scaleMatrix = m3.scaling(data.scale[0], data.scale[1])
 
-    let matrix = m3.multiply(translationMatrix, rotationMatrix)
-    matrix = m3.multiply(matrix, scaleMatrix)
+    let matrix = m3.identity();
 
-    gl.uniformMatrix3fv(position.transformPtr, false, matrix)
+    for (let i = 0; i < 5; ++i) {
 
-    let triangleCount = 18
-    let offset = 0
-    gl.drawArrays(gl.TRIANGLES, offset, triangleCount)
+        matrix = m3.multiply(matrix, translationMatrix)
+        matrix = m3.multiply(matrix, rotationMatrix)
+        matrix = m3.multiply(matrix, scaleMatrix)
+
+        gl.uniformMatrix3fv(position.transformPtr, false, matrix)
+
+        let triangleCount = 18
+        let offset = 0
+        gl.drawArrays(gl.TRIANGLES, offset, triangleCount)
+    }
 }
 
 
