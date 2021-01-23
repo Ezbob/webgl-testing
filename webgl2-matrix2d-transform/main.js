@@ -52,7 +52,7 @@ function drawScene(gl, vao, position, data) {
 
     gl.uniform4fv(position.colorPtr, data.color)
 
-    let projectionMatrix = m3.projection(gl.canvas.width, gl.canvas.height)
+    let projectionMatrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight)
     let translationMatrix = m3.translation(data.translation[0], data.translation[1])
     let rotationMatrix = m3.rotation(data.rotation)
     let scaleMatrix = m3.scaling(data.scale[0], data.scale[1])
