@@ -58,20 +58,20 @@ function drawScene(gl, vao, position, data) {
     let rotationMatrix = m3.rotation(data.rotation)
     let scaleMatrix = m3.scaling(data.scale[0], data.scale[1])
 
-    let matrix = m3.identity();
+    let moveOriginMatrix = m3.translation(-50, -75);
 
-    for (let i = 0; i < 5; ++i) {
+    let identity = m3.identity()
+    let matrix = m3.multiply(identity, translationMatrix)
+    matrix = m3.multiply(matrix, rotationMatrix)
+    matrix = m3.multiply(matrix, scaleMatrix)
+    matrix = m3.multiply(matrix, moveOriginMatrix)
 
-        matrix = m3.multiply(matrix, translationMatrix)
-        matrix = m3.multiply(matrix, rotationMatrix)
-        matrix = m3.multiply(matrix, scaleMatrix)
+    gl.uniformMatrix3fv(position.transformPtr, false, matrix)
 
-        gl.uniformMatrix3fv(position.transformPtr, false, matrix)
+    let triangleCount = 18
+    let offset = 0
+    gl.drawArrays(gl.TRIANGLES, offset, triangleCount)
 
-        let triangleCount = 18
-        let offset = 0
-        gl.drawArrays(gl.TRIANGLES, offset, triangleCount)
-    }
 }
 
 
@@ -86,16 +86,13 @@ function main(vertexShaderSource, fragmentShaderSource) {
         return
     }
 
-    let translation = [0, 0]
+    const gl = webglUtils.newWebGL2Context('#canvas')
+
+    let translation = [gl.canvas.width / 2, gl.canvas.height / 2]
     let color = [Math.random(), Math.random(), Math.random(), 1]
     let rotation = 0
     let scale = [1, 1]
 
-
-    /* Step 1: Prepare WebGL context and fetch from DOM */
-    const gl = webglUtils.newWebGL2Context('#canvas')
-
-    /* Step 2: Create the webgl program using shaders */
     const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
 
     const posPtr = program.getAttributeLocation("a_position")
@@ -149,7 +146,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'X Translation:',
-            {minValue: 0, maxValue: 300},
+            {minValue: 0, maxValue: 300, currentValue: translation[0]},
             value => {
                 translation[0] = Number(value)
                 redraw()
@@ -157,7 +154,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Y Translation:',
-            {minValue: 0, maxValue: 200},
+            {minValue: 0, maxValue: 200, currentValue: translation[1]},
             value => {
                 translation[1] = Number(value)
                 redraw()
