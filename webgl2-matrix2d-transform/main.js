@@ -52,17 +52,12 @@ function drawScene(gl, vao, position, data) {
 
     gl.uniform4fv(position.colorPtr, data.color)
 
-    let projectionMatrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight)
-    let translationMatrix = m3.translation(data.translation[0], data.translation[1])
-    let rotationMatrix = m3.rotation(data.rotation)
-    let scaleMatrix = m3.scaling(data.scale[0], data.scale[1])
-
-    let moveOriginMatrix = m3.translation(-50, -75);
-
-    let matrix = m3.multiply(projectionMatrix, translationMatrix)
-    matrix = m3.multiply(matrix, rotationMatrix)
-    matrix = m3.multiply(matrix, scaleMatrix)
-    matrix = m3.multiply(matrix, moveOriginMatrix)
+    let matrix = m3.identity()
+    matrix = m3.projection(matrix, gl.canvas.clientWidth, gl.canvas.clientHeight)
+    matrix = m3.translation(matrix, data.translation[0], data.translation[1])
+    matrix = m3.rotation(matrix, data.rotation)
+    matrix = m3.scaling(matrix, data.scale[0], data.scale[1])
+    matrix = m3.translation(matrix, -50, -75)
 
     gl.uniformMatrix3fv(position.transformPtr, false, matrix)
 

@@ -1,28 +1,36 @@
 
-export function translation(tx, ty) {
-        return [
+export function translation(m, tx, ty) {
+        return multiply(m, [
             1,  0,  0,
             0,  1,  0,
             tx, ty, 1
-        ];
+        ]);
     };
 
-export function rotation(radians) {
+export function rotation(m, radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
 
-    return [
+    return multiply(m, [
         c, -s, 0,
         s,  c, 0,
         0,  0, 1,
-    ];
+    ]);
 };
 
-export function scaling(sx, sy) {
-    return [
+export function scaling(m, sx, sy) {
+    return multiply(m, [
         sx,  0,  0,
         0,  sy,  0,
         0,   0,  1,
+    ]);
+};
+
+export function identity() {
+    return [
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
     ];
 };
 
@@ -57,25 +65,17 @@ export function multiply(mat_a, mat_b) {
         b20 * a01 + b21 * a11 + b22 * a21,
         b20 * a02 + b21 * a12 + b22 * a22,
     ];
-}
-
-export function identity() {
-    return [
-        1, 0, 0,
-        0, 1, 0,
-        0, 0, 1
-    ];
-}
+};
 
 /**
  * Projection from pixel coordinates into clip space
  * @param {number} width 
  * @param {number} height 
  */
-export function projection(width, height) {
-    return [
+export function projection(m, width, height) {
+    return multiply(m, [
         (2 / width), 0,             0,
         0,           (-2 / height), 0,
         -1,          1,             1,
-    ];
-}
+    ]);
+};
