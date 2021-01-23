@@ -66,3 +66,16 @@ export function identity() {
         0, 0, 1
     ];
 }
+
+/**
+ * Projection from pixel coordinates into clip space
+ * @param {number} width 
+ * @param {number} height 
+ */
+export function projection(width, height) {
+    return [
+        (2 / width), 0,             0,
+        0,           (-2 / height), 0,
+        -1,          1,             1,
+    ];
+}

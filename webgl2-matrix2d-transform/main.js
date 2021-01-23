@@ -48,20 +48,18 @@ function drawScene(gl, vao, position, data) {
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // clear screen space with an transparent value
 
-    gl.uniform2f(position.resolutionPtr, gl.canvas.width, gl.canvas.height);
-
     gl.bindVertexArray(vao)
 
     gl.uniform4fv(position.colorPtr, data.color)
 
+    let projectionMatrix = m3.projection(gl.canvas.width, gl.canvas.height)
     let translationMatrix = m3.translation(data.translation[0], data.translation[1])
     let rotationMatrix = m3.rotation(data.rotation)
     let scaleMatrix = m3.scaling(data.scale[0], data.scale[1])
 
     let moveOriginMatrix = m3.translation(-50, -75);
 
-    let identity = m3.identity()
-    let matrix = m3.multiply(identity, translationMatrix)
+    let matrix = m3.multiply(projectionMatrix, translationMatrix)
     matrix = m3.multiply(matrix, rotationMatrix)
     matrix = m3.multiply(matrix, scaleMatrix)
     matrix = m3.multiply(matrix, moveOriginMatrix)
@@ -96,10 +94,8 @@ function main(vertexShaderSource, fragmentShaderSource) {
     const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
 
     const posPtr = program.getAttributeLocation("a_position")
-    const resolutionPtr = program.getUniformLocation("u_resolution")
     const colorPtr = program.getUniformLocation("u_color")
     const transformPtr = program.getUniformLocation("u_transform")
-
 
     const bufferObject2 = gl.createBuffer()
     const vao = gl.createVertexArray()
@@ -116,7 +112,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
 
     const redraw = () => {
         drawScene(gl, vao,
-            {colorPtr, resolutionPtr, transformPtr},
+            {colorPtr, transformPtr},
             {translation, color, rotation, scale}
         )
     }
