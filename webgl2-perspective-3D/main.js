@@ -304,8 +304,10 @@ function drawScene(gl, vao, position, data) {
 
     gl.bindVertexArray(vao)
 
-    let matrix = m4.makeZToWMatrix(data.fudgeFactor)
-    matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
+    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
+
+    let matrix = m4.perspective(data.fieldOfViewRadians, aspect, 1, 2000)
+    //matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
     matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
     matrix = m4.xRotation(matrix, data.rotation[0])
     matrix = m4.yRotation(matrix, data.rotation[1])
@@ -335,11 +337,10 @@ function main(vertexShaderSource, fragmentShaderSource) {
 
     const gl = webglUtils.newWebGL2Context('#canvas')
 
-    let translation = [45, 150, 0]
-    let rotation = [webglUtils.degreesToRadians(40), webglUtils.degreesToRadians(25), webglUtils.degreesToRadians(325)]
+    let translation = [-150, 0, -360]
+    let rotation = [webglUtils.degreesToRadians(190), webglUtils.degreesToRadians(40), webglUtils.degreesToRadians(30)]
     let scale = [1, 1, 1]
-    let color = [Math.random(), Math.random(), Math.random(), 1]
-    let fudgeFactor = 1
+    let fieldOfViewRadians = webglUtils.degreesToRadians(60)
 
     const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
 
@@ -377,7 +378,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
     const redraw = () => {
         drawScene(gl, vao,
             {transformPtr},
-            {translation, color, rotation, scale, fudgeFactor}
+            {translation, rotation, scale, fieldOfViewRadians}
         )
     }
 
@@ -387,10 +388,10 @@ function main(vertexShaderSource, fragmentShaderSource) {
 
     let sliders = [
         webglUtils.addSlider(
-            'Fudge factor:',
-            {minValue: 0, maxValue: 1, stepValue: 0.1, currentValue: fudgeFactor},
+            'Field of view:',
+            {minValue: 0, maxValue: 360, stepValue: 1, currentValue: webglUtils.radiansToDegrees(fieldOfViewRadians)},
             value => {
-                fudgeFactor = Number(value)
+                fieldOfViewRadians = webglUtils.degreesToRadians(Number(value))
                 redraw()
             }
         ),
@@ -447,7 +448,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'X Translation:',
-            {minValue: 0, maxValue: 300, currentValue: translation[0]},
+            {maxValue: 300, currentValue: translation[0]},
             value => {
                 translation[0] = Number(value)
                 redraw()
@@ -455,7 +456,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Y Translation:',
-            {minValue: 0, maxValue: 200, currentValue: translation[1]},
+            {maxValue: 200, currentValue: translation[1]},
             value => {
                 translation[1] = Number(value)
                 redraw()
@@ -463,7 +464,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Z Translation:',
-            {minValue: 0, maxValue: 200, currentValue: translation[2]},
+            {maxValue: 200, currentValue: translation[2]},
             value => {
                 translation[2] = Number(value)
                 redraw()

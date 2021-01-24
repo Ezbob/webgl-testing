@@ -203,6 +203,11 @@ export function addSlider(labelText, inputFieldValues, inputHandler) {
     let sliderId = 'input-slider-' + (sliderIds)
     sliderIds++
 
+    if (typeof(inputFieldValues.minValue) == "undefined" 
+        && typeof(inputFieldValues.currentValue) != "undefined") {
+        inputFieldValues.minValue = inputFieldValues.currentValue
+    }
+
     if (inputFieldValues.minValue > inputFieldValues.maxValue) {
         throw new Error("Max value " + inputFieldValues.maxValue + " is smaller than max " + 
                         inputFieldValues.minValue)
