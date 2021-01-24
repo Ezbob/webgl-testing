@@ -141,6 +141,145 @@ function setGeometry(gl) {
 }
 
 /**
+ * 
+ * @param {WebGL2RenderingContext} gl 
+ */
+function setColor(gl) {
+    gl.bufferData(gl.ARRAY_BUFFER,
+        new Uint8Array([
+            // left column front
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+
+            // top rung front
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+
+            // middle rung front
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+            200,  70, 120,
+
+            // left column back
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+
+            // top rung back
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+
+            // middle rung back
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+            80, 70, 200,
+
+            // top
+            70, 200, 210,
+            70, 200, 210,
+            70, 200, 210,
+            70, 200, 210,
+            70, 200, 210,
+            70, 200, 210,
+
+            // top rung right
+            200, 200, 70,
+            200, 200, 70,
+            200, 200, 70,
+            200, 200, 70,
+            200, 200, 70,
+            200, 200, 70,
+
+            // under top rung
+            210, 100, 70,
+            210, 100, 70,
+            210, 100, 70,
+            210, 100, 70,
+            210, 100, 70,
+            210, 100, 70,
+
+            // between top rung and middle
+            210, 160, 70,
+            210, 160, 70,
+            210, 160, 70,
+            210, 160, 70,
+            210, 160, 70,
+            210, 160, 70,
+
+            // top of middle rung
+            70, 180, 210,
+            70, 180, 210,
+            70, 180, 210,
+            70, 180, 210,
+            70, 180, 210,
+            70, 180, 210,
+
+            // right of middle rung
+            100, 70, 210,
+            100, 70, 210,
+            100, 70, 210,
+            100, 70, 210,
+            100, 70, 210,
+            100, 70, 210,
+
+            // bottom of middle rung.
+            76, 210, 100,
+            76, 210, 100,
+            76, 210, 100,
+            76, 210, 100,
+            76, 210, 100,
+            76, 210, 100,
+
+            // right of bottom
+            140, 210, 80,
+            140, 210, 80,
+            140, 210, 80,
+            140, 210, 80,
+            140, 210, 80,
+            140, 210, 80,
+
+            // bottom
+            90, 130, 110,
+            90, 130, 110,
+            90, 130, 110,
+            90, 130, 110,
+            90, 130, 110,
+            90, 130, 110,
+
+            // left side
+            160, 160, 220,
+            160, 160, 220,
+            160, 160, 220,
+            160, 160, 220,
+            160, 160, 220,
+            160, 160, 220,
+        ]),
+        gl.STATIC_DRAW
+    );
+}
+
+/**
  * scene drawing. the vertex shader translates the F, while input data remains the same
  * @param {WebGL2RenderingContext} gl 
  * @param {WebGLVertexArrayObject} vao 
@@ -152,8 +291,6 @@ function drawScene(gl, vao, position, data) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // clear screen space with an transparent value
 
     gl.bindVertexArray(vao)
-
-    gl.uniform4fv(position.colorPtr, data.color)
 
     let matrix = m4.identity()
     matrix = m4.projection(matrix, gl.canvas.clientWidth, gl.canvas.clientHeight, 400)
@@ -194,25 +331,39 @@ function main(vertexShaderSource, fragmentShaderSource) {
     const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
 
     const posPtr = program.getAttributeLocation("a_position")
-    const colorPtr = program.getUniformLocation("u_color")
+    const colorPtr = program.getAttributeLocation("a_color")
+
     const transformPtr = program.getUniformLocation("u_transform")
 
-    const bufferObject2 = gl.createBuffer()
     const vao = gl.createVertexArray()
 
     gl.bindVertexArray(vao) // set vao as the active vao
 
+    /* position attribute setup */
+    const positionBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+
+    setGeometry(gl) // buffers data
+
     gl.enableVertexAttribArray(posPtr)
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, bufferObject2)
-
-    setGeometry(gl)
-
     gl.vertexAttribPointer(posPtr, 3, gl.FLOAT, false, 0, 0)
 
+    /* color attribute setup */
+    const colorBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+
+    setColor(gl) // buffers data
+
+    gl.enableVertexAttribArray(colorPtr)
+    gl.vertexAttribPointer(colorPtr, 3, gl.UNSIGNED_BYTE, true, 0, 0)
+        // ^ normalizing true -> 0-255 char is mapped to 0.0-1.0 range
+        // Coloring in the fragment shader uses 0.0-1.0 values
+
+
+    /* drawing and ui  */
     const redraw = () => {
         drawScene(gl, vao,
-            {colorPtr, transformPtr},
+            {transformPtr},
             {translation, color, rotation, scale}
         )
     }
