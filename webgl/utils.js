@@ -261,3 +261,11 @@ export function getUiSection() {
 
     return section
 }
+
+export function degreesToRadians(degree) {
+    return degree * Math.PI / 180
+}
+
+export function radiansToDegrees(radians) {
+    return radians * 180 / Math.PI
+}
