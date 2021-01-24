@@ -57,7 +57,7 @@ function drawScene(gl, vao, position, data) {
     matrix = m3.translation(matrix, data.translation[0], data.translation[1])
     matrix = m3.rotation(matrix, data.rotation)
     matrix = m3.scaling(matrix, data.scale[0], data.scale[1])
-    matrix = m3.translation(matrix, -50, -75)
+    matrix = m3.translation(matrix, -50, -75) // moves the anchor point
 
     gl.uniformMatrix3fv(position.transformPtr, false, matrix)
 
