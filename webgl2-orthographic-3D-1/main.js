@@ -3,138 +3,142 @@ import * as m4 from '../webgl/matrix4.js'
 
 //@ts-check
 
+/**
+ * 
+ * @param {WebGL2RenderingContext} gl 
+ */
 function setGeometry(gl) {
     // drawing an F out of three bawxes
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array([
-            // left box
-             0,   0,  0,
-            30,   0,  0,
-             0, 150,  0,
-             0, 150,  0,
-            30,   0,  0,
-            30, 150,  0,
+          // left column front
+          0,   0,  0,
+          0, 150,  0,
+          30,   0,  0,
+          0, 150,  0,
+          30, 150,  0,
+          30,   0,  0,
 
-            // top box
-             30,  0,  0,
-            100,  0,  0,
-             30, 30,  0,
-             30, 30,  0,
-            100,  0,  0,
-            100, 30,  0,
+          // top rung front
+          30,   0,  0,
+          30,  30,  0,
+          100,   0,  0,
+          30,  30,  0,
+          100,  30,  0,
+          100,   0,  0,
 
-            // middle box
-            30,  60,  0,
-            67,  60,  0,
-            30,  90,  0,
-            30,  90,  0,
-            67,  60,  0,
-            67,  90,  0,
+          // middle rung front
+          30,  60,  0,
+          30,  90,  0,
+          67,  60,  0,
+          30,  90,  0,
+          67,  90,  0,
+          67,  60,  0,
 
-            // left column back
+          // left column back
             0,   0,  30,
-            30,   0,  30,
-             0, 150,  30,
-             0, 150,  30,
-            30,   0,  30,
-            30, 150,  30,
- 
-           // top rung back
-            30,   0,  30,
-           100,   0,  30,
-            30,  30,  30,
-            30,  30,  30,
-           100,   0,  30,
-           100,  30,  30,
+           30,   0,  30,
+            0, 150,  30,
+            0, 150,  30,
+           30,   0,  30,
+           30, 150,  30,
 
-            // middle rung back
-            30,  60,  30,
-            67,  60,  30,
-            30,  90,  30,
-            30,  90,  30,
-            67,  60,  30,
-            67,  90,  30,
+          // top rung back
+           30,   0,  30,
+          100,   0,  30,
+           30,  30,  30,
+           30,  30,  30,
+          100,   0,  30,
+          100,  30,  30,
 
-            // top
-              0,   0,   0,
-            100,   0,   0,
-            100,   0,  30,
-              0,   0,   0,
-            100,   0,  30,
-              0,   0,  30,
+          // middle rung back
+           30,  60,  30,
+           67,  60,  30,
+           30,  90,  30,
+           30,  90,  30,
+           67,  60,  30,
+           67,  90,  30,
 
-            // top rung right
-            100,   0,   0,
-            100,  30,   0,
-            100,  30,  30,
-            100,   0,   0,
-            100,  30,  30,
-            100,   0,  30,
+          // top
+            0,   0,   0,
+          100,   0,   0,
+          100,   0,  30,
+            0,   0,   0,
+          100,   0,  30,
+            0,   0,  30,
 
-            // under top rung
-            30,   30,   0,
-            30,   30,  30,
-            100,  30,  30,
-            30,   30,   0,
-            100,  30,  30,
-            100,  30,   0,
+          // top rung right
+          100,   0,   0,
+          100,  30,   0,
+          100,  30,  30,
+          100,   0,   0,
+          100,  30,  30,
+          100,   0,  30,
 
-            // between top rung and middle
-            30,   30,   0,
-            30,   30,  30,
-            30,   60,  30,
-            30,   30,   0,
-            30,   60,  30,
-            30,   60,   0,
+          // under top rung
+          30,   30,   0,
+          30,   30,  30,
+          100,  30,  30,
+          30,   30,   0,
+          100,  30,  30,
+          100,  30,   0,
 
-            // top of middle rung
-            30,   60,   0,
-            30,   60,  30,
-            67,   60,  30,
-            30,   60,   0,
-            67,   60,  30,
-            67,   60,   0,
+          // between top rung and middle
+          30,   30,   0,
+          30,   60,  30,
+          30,   30,  30,
+          30,   30,   0,
+          30,   60,   0,
+          30,   60,  30,
 
-            // right of middle rung
-            67,   60,   0,
-            67,   60,  30,
-            67,   90,  30,
-            67,   60,   0,
-            67,   90,  30,
-            67,   90,   0,
+          // top of middle rung
+          30,   60,   0,
+          67,   60,  30,
+          30,   60,  30,
+          30,   60,   0,
+          67,   60,   0,
+          67,   60,  30,
 
-            // bottom of middle rung.
-            30,   90,   0,
-            30,   90,  30,
-            67,   90,  30,
-            30,   90,   0,
-            67,   90,  30,
-            67,   90,   0,
+          // right of middle rung
+          67,   60,   0,
+          67,   90,  30,
+          67,   60,  30,
+          67,   60,   0,
+          67,   90,   0,
+          67,   90,  30,
 
-            // right of bottom
-            30,   90,   0,
-            30,   90,  30,
-            30,  150,  30,
-            30,   90,   0,
-            30,  150,  30,
-            30,  150,   0,
+          // bottom of middle rung.
+          30,   90,   0,
+          30,   90,  30,
+          67,   90,  30,
+          30,   90,   0,
+          67,   90,  30,
+          67,   90,   0,
 
-            // bottom
-            0,   150,   0,
-            0,   150,  30,
-            30,  150,  30,
-            0,   150,   0,
-            30,  150,  30,
-            30,  150,   0,
+          // right of bottom
+          30,   90,   0,
+          30,  150,  30,
+          30,   90,  30,
+          30,   90,   0,
+          30,  150,   0,
+          30,  150,  30,
 
-            // left side
-            0,     0,   0,
-            0,     0,  30,
-            0,   150,  30,
-            0,     0,   0,
-            0,   150,  30,
-            0,   150,   0,
+          // bottom
+          0,   150,   0,
+          0,   150,  30,
+          30,  150,  30,
+          0,   150,   0,
+          30,  150,  30,
+          30,  150,   0,
+
+          // left side
+          0,   0,   0,
+          0,   0,  30,
+          0, 150,  30,
+          0,   0,   0,
+          0, 150,  30,
+          0, 150,   0,
         ]),
         gl.STATIC_DRAW
     );
@@ -285,6 +289,14 @@ function setColor(gl) {
  * @param {WebGLVertexArrayObject} vao 
  */
 function drawScene(gl, vao, position, data) {
+
+    gl.enable(gl.CULL_FACE) // only draw front-facing triangles
+        // a front facing triangle is triangle in which vertices are
+        // described in a counter-clockwise fashion 
+        // (so order matters when describing the geometry!!)
+
+    gl.enable(gl.DEPTH_TEST)
+        // enable z-buffering which makes determine the depth of front facing possible
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.clearColor(0, 0, 0, 0)
