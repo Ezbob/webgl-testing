@@ -120,12 +120,31 @@ export function multiply(a, b) {
  * Projection from pixel coordinates into clip space
  * @param {number} width 
  * @param {number} height 
+ * @param {number} depth
  */
-export function projection(m, width, height, depth) {
-    return multiply(m, [
+export function projection(width, height, depth) {
+    return [
         (2 / width),  0,              0,                 0,
         0,            (-2 / height),  0,                 0,
         0,            0,              (2 / depth),       0,
        -1,            1,              0,                 1,
-    ]);
+    ];
 };
+
+/**
+ * Orthographic projection
+ * @param {number} left 
+ * @param {number} right 
+ * @param {number} bottom 
+ * @param {number} top 
+ * @param {number} near 
+ * @param {number} far 
+ */
+export function orthographic(left, right, bottom, top, near, far) {
+    return [
+      (2 / (right - left)),              0,                                 0,                              0,
+      0,                                 (2 / (top - bottom)),              0,                              0,
+      0,                                 0,                                 (2 / (near - far)),             0,
+      ((left + right) / (left - right)), ((bottom + top) / (bottom - top)), ((near + far) / (near - far)),  1,
+    ];
+}

@@ -304,8 +304,15 @@ function drawScene(gl, vao, position, data) {
 
     gl.bindVertexArray(vao)
 
-    let matrix = m4.identity()
-    matrix = m4.projection(matrix, gl.canvas.clientWidth, gl.canvas.clientHeight, 400)
+
+    let left = 0
+    let right = gl.canvas.clientWidth
+    let bottom = gl.canvas.clientHeight
+    let top = 0
+    let near = 400
+    let far = -400
+
+    let matrix = m4.orthographic(left, right, bottom, top, near, far)
     matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
     matrix = m4.xRotation(matrix, data.rotation[0])
     matrix = m4.yRotation(matrix, data.rotation[1])
