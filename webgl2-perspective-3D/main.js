@@ -302,18 +302,10 @@ function drawScene(gl, vao, position, data) {
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // clear screen space with an transparent value
 
-    gl.uniform1f(position.fudgePtr, data.fudgeFactor)
-
     gl.bindVertexArray(vao)
 
-    let left = 0
-    let right = gl.canvas.clientWidth
-    let bottom = gl.canvas.clientHeight
-    let top = 0
-    let near = 400
-    let far = -400
-
-    let matrix = m4.projection(right, bottom, 400)
+    let matrix = m4.makeZToWMatrix(data.fudgeFactor)
+    matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
     matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
     matrix = m4.xRotation(matrix, data.rotation[0])
     matrix = m4.yRotation(matrix, data.rotation[1])
@@ -355,7 +347,6 @@ function main(vertexShaderSource, fragmentShaderSource) {
     const colorPtr = program.getAttributeLocation("a_color")
 
     const transformPtr = program.getUniformLocation("u_transform")
-    const fudgePtr = program.getUniformLocation("u_fudgeFactor")
 
     const vao = gl.createVertexArray()
 
@@ -385,7 +376,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
     /* drawing and ui  */
     const redraw = () => {
         drawScene(gl, vao,
-            {transformPtr, fudgePtr},
+            {transformPtr},
             {translation, color, rotation, scale, fudgeFactor}
         )
     }

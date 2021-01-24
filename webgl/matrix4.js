@@ -148,3 +148,12 @@ export function orthographic(left, right, bottom, top, near, far) {
       ((left + right) / (left - right)), ((bottom + top) / (bottom - top)), ((near + far) / (near - far)),  1,
     ];
 }
+
+export function makeZToWMatrix(fudgeFactor) {
+    return [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, fudgeFactor,
+        0, 0, 0, 1,
+    ]
+}
