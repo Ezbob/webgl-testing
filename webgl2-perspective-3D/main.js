@@ -306,7 +306,9 @@ function drawScene(gl, vao, position, data) {
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
 
-    let matrix = m4.perspective(data.fieldOfViewRadians, aspect, 1, 2000)
+    let near = 1   // z of the (top) plane of the view frustum
+    let far = 2000 // z of the bottom plane of the view frustum
+    let matrix = m4.perspective(data.fieldOfViewRadians, aspect, near, far)
     //matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
     matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
     matrix = m4.xRotation(matrix, data.rotation[0])
