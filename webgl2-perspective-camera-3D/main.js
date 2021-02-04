@@ -9,137 +9,158 @@ import * as m4 from '../webgl/matrix4.js'
  */
 function setGeometry(gl) {
     // drawing an F out of three bawxes
+
+    const geoData = new Float32Array([
+        // left column front
+        0,   0,  0,
+        0, 150,  0,
+        30,   0,  0,
+        0, 150,  0,
+        30, 150,  0,
+        30,   0,  0,
+
+        // top rung front
+        30,   0,  0,
+        30,  30,  0,
+        100,   0,  0,
+        30,  30,  0,
+        100,  30,  0,
+        100,   0,  0,
+
+        // middle rung front
+        30,  60,  0,
+        30,  90,  0,
+        67,  60,  0,
+        30,  90,  0,
+        67,  90,  0,
+        67,  60,  0,
+
+        // left column back
+          0,   0,  30,
+         30,   0,  30,
+          0, 150,  30,
+          0, 150,  30,
+         30,   0,  30,
+         30, 150,  30,
+
+        // top rung back
+         30,   0,  30,
+        100,   0,  30,
+         30,  30,  30,
+         30,  30,  30,
+        100,   0,  30,
+        100,  30,  30,
+
+        // middle rung back
+         30,  60,  30,
+         67,  60,  30,
+         30,  90,  30,
+         30,  90,  30,
+         67,  60,  30,
+         67,  90,  30,
+
+        // top
+          0,   0,   0,
+        100,   0,   0,
+        100,   0,  30,
+          0,   0,   0,
+        100,   0,  30,
+          0,   0,  30,
+
+        // top rung right
+        100,   0,   0,
+        100,  30,   0,
+        100,  30,  30,
+        100,   0,   0,
+        100,  30,  30,
+        100,   0,  30,
+
+        // under top rung
+        30,   30,   0,
+        30,   30,  30,
+        100,  30,  30,
+        30,   30,   0,
+        100,  30,  30,
+        100,  30,   0,
+
+        // between top rung and middle
+        30,   30,   0,
+        30,   60,  30,
+        30,   30,  30,
+        30,   30,   0,
+        30,   60,   0,
+        30,   60,  30,
+
+        // top of middle rung
+        30,   60,   0,
+        67,   60,  30,
+        30,   60,  30,
+        30,   60,   0,
+        67,   60,   0,
+        67,   60,  30,
+
+        // right of middle rung
+        67,   60,   0,
+        67,   90,  30,
+        67,   60,  30,
+        67,   60,   0,
+        67,   90,   0,
+        67,   90,  30,
+
+        // bottom of middle rung.
+        30,   90,   0,
+        30,   90,  30,
+        67,   90,  30,
+        30,   90,   0,
+        67,   90,  30,
+        67,   90,   0,
+
+        // right of bottom
+        30,   90,   0,
+        30,  150,  30,
+        30,   90,  30,
+        30,   90,   0,
+        30,  150,   0,
+        30,  150,  30,
+
+        // bottom
+        0,   150,   0,
+        0,   150,  30,
+        30,  150,  30,
+        0,   150,   0,
+        30,  150,  30,
+        30,  150,   0,
+
+        // left side
+        0,   0,   0,
+        0,   0,  30,
+        0, 150,  30,
+        0,   0,   0,
+        0, 150,  30,
+        0, 150,   0,
+    ]);
+
+
+    // Center the F around the origin and Flip it around. We do this because
+    // we're in 3D now with and +Y is up where as before when we started with 2D
+    // we had +Y as down.
+
+    // We could do by changing all the values above but I'm lazy.
+    // We could also do it with a matrix at draw time but you should
+    // never do stuff at draw time if you can do it at init time.
+    var matrix = m4.xRotation(m4.identity(), Math.PI);
+    matrix = m4.translation(matrix, -50, -75, -15);
+
+    for (var i = 0; i < geoData.length; i += 3) {
+        var vector = m4.transformVector(matrix, [geoData[i + 0], geoData[i + 1], geoData[i + 2], 1]);
+        geoData[i + 0] = vector[0];
+        geoData[i + 1] = vector[1];
+        geoData[i + 2] = vector[2];
+    }
+
     gl.bufferData(
         gl.ARRAY_BUFFER,
-        new Float32Array([
-          // left column front
-          0,   0,  0,
-          0, 150,  0,
-          30,   0,  0,
-          0, 150,  0,
-          30, 150,  0,
-          30,   0,  0,
-
-          // top rung front
-          30,   0,  0,
-          30,  30,  0,
-          100,   0,  0,
-          30,  30,  0,
-          100,  30,  0,
-          100,   0,  0,
-
-          // middle rung front
-          30,  60,  0,
-          30,  90,  0,
-          67,  60,  0,
-          30,  90,  0,
-          67,  90,  0,
-          67,  60,  0,
-
-          // left column back
-            0,   0,  30,
-           30,   0,  30,
-            0, 150,  30,
-            0, 150,  30,
-           30,   0,  30,
-           30, 150,  30,
-
-          // top rung back
-           30,   0,  30,
-          100,   0,  30,
-           30,  30,  30,
-           30,  30,  30,
-          100,   0,  30,
-          100,  30,  30,
-
-          // middle rung back
-           30,  60,  30,
-           67,  60,  30,
-           30,  90,  30,
-           30,  90,  30,
-           67,  60,  30,
-           67,  90,  30,
-
-          // top
-            0,   0,   0,
-          100,   0,   0,
-          100,   0,  30,
-            0,   0,   0,
-          100,   0,  30,
-            0,   0,  30,
-
-          // top rung right
-          100,   0,   0,
-          100,  30,   0,
-          100,  30,  30,
-          100,   0,   0,
-          100,  30,  30,
-          100,   0,  30,
-
-          // under top rung
-          30,   30,   0,
-          30,   30,  30,
-          100,  30,  30,
-          30,   30,   0,
-          100,  30,  30,
-          100,  30,   0,
-
-          // between top rung and middle
-          30,   30,   0,
-          30,   60,  30,
-          30,   30,  30,
-          30,   30,   0,
-          30,   60,   0,
-          30,   60,  30,
-
-          // top of middle rung
-          30,   60,   0,
-          67,   60,  30,
-          30,   60,  30,
-          30,   60,   0,
-          67,   60,   0,
-          67,   60,  30,
-
-          // right of middle rung
-          67,   60,   0,
-          67,   90,  30,
-          67,   60,  30,
-          67,   60,   0,
-          67,   90,   0,
-          67,   90,  30,
-
-          // bottom of middle rung.
-          30,   90,   0,
-          30,   90,  30,
-          67,   90,  30,
-          30,   90,   0,
-          67,   90,  30,
-          67,   90,   0,
-
-          // right of bottom
-          30,   90,   0,
-          30,  150,  30,
-          30,   90,  30,
-          30,   90,   0,
-          30,  150,   0,
-          30,  150,  30,
-
-          // bottom
-          0,   150,   0,
-          0,   150,  30,
-          30,  150,  30,
-          0,   150,   0,
-          30,  150,  30,
-          30,  150,   0,
-
-          // left side
-          0,   0,   0,
-          0,   0,  30,
-          0, 150,  30,
-          0,   0,   0,
-          0, 150,  30,
-          0, 150,   0,
-        ]),
+        geoData,
         gl.STATIC_DRAW
     );
 }
@@ -304,24 +325,43 @@ function drawScene(gl, vao, position, data) {
 
     gl.bindVertexArray(vao)
 
-    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
+    const radius = 200;
+    const nFs = 5;
 
-    let near = 1   // z of the (top) plane of the view frustum
-    let far = 2000 // z of the bottom plane of the view frustum
-    let matrix = m4.perspective(data.fieldOfViewRadians, aspect, near, far)
-    //matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
-    matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
-    matrix = m4.xRotation(matrix, data.rotation[0])
-    matrix = m4.yRotation(matrix, data.rotation[1])
-    matrix = m4.zRotation(matrix, data.rotation[2])
-    matrix = m4.scaling(matrix, data.scale[0], data.scale[1], data.scale[2])
+    // projection that puts stuff stuff in a frustum. The frustum is effectively a pyramid
+    // with the pointy top cutoff by a rectangular plane. Doing this is important to avoid
+    // over-clipping when the camera zooms in close to some object of if some object is really far 
+    // away
+    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    let zNearPlane = 1;
+    let zFarPlane = 2000;
+    let projectionMatrix = m4.perspective(data.fieldOfViewRadians, aspect, zNearPlane, zFarPlane)
 
-    gl.uniformMatrix4fv(position.transformPtr, false, matrix)
 
-    let triangleCount = 16 * 6; // to make the geometry more 3D like we have to have 16 rectangles
-                                // of 2 triangles each (which themselves consist of 3 vertices)
-    let offset = 0
-    gl.drawArrays(gl.TRIANGLES, offset, triangleCount)
+    // camera trick; we create an cameraMatrix moves this the way we want, and
+    // compute the inverse to get the movement of how everything will be moved
+    // relative to the camera if that camera movement was done
+    let cameraMatrix = m4.yRotation(m4.identity(), data.cameraAngleRadians)
+    cameraMatrix = m4.translation(cameraMatrix, 0, 0, radius * 1.5);
+    let viewMatrix = m4.inverse(cameraMatrix);
+    let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+
+    // let draw nFs F in a circle
+    for (let i = 0; i < nFs; ++i) {
+        let angle = i * Math.PI * 2 / nFs;
+
+        let x = Math.cos(angle) * radius;
+        let z = Math.sin(angle) * radius;
+
+        let matrix = m4.translation(viewProjectionMatrix, x, 0, z);
+
+        gl.uniformMatrix4fv(position.transformPtr, false, matrix);
+
+        let primitiveType = gl.TRIANGLES;
+        let offset = 0;
+        let count = 16 * 6;
+        gl.drawArrays(primitiveType, offset, count);
+    }
 
 }
 
@@ -343,6 +383,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
     let rotation = [webglUtils.degreesToRadians(190), webglUtils.degreesToRadians(40), webglUtils.degreesToRadians(30)]
     let scale = [1, 1, 1]
     let fieldOfViewRadians = webglUtils.degreesToRadians(60)
+    let cameraAngleRadians = webglUtils.degreesToRadians(0)
 
     const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
 
@@ -380,7 +421,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
     const redraw = () => {
         drawScene(gl, vao,
             {transformPtr},
-            {translation, rotation, scale, fieldOfViewRadians}
+            {cameraAngleRadians, fieldOfViewRadians}
         )
     }
 
@@ -389,89 +430,14 @@ function main(vertexShaderSource, fragmentShaderSource) {
     let ui_section = webglUtils.getUiSection()
 
     let sliders = [
-        webglUtils.addSlider(
-            'Field of view:',
-            {minValue: 0, maxValue: 360, stepValue: 1, currentValue: webglUtils.radiansToDegrees(fieldOfViewRadians)},
-            value => {
-                fieldOfViewRadians = webglUtils.degreesToRadians(Number(value))
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'X Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
-            value => {
-                scale[0] = Number(value)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Y Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
-            value => {
-                scale[1] = Number(value)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Z Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
-            value => {
-                scale[2] = Number(value)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'X Rotation:',
-            {minValue: 0, maxValue: 360},
-            value => {
-                let angleInDegrees = Number(value)
-                rotation[0] = webglUtils.degreesToRadians(angleInDegrees)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Y Rotation:',
-            {minValue: 0, maxValue: 360},
-            value => {
-                let angleInDegrees = Number(value)
-                rotation[1] = webglUtils.degreesToRadians(angleInDegrees)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Z Rotation:',
-            {minValue: 0, maxValue: 360},
-            value => {
-                let angleInDegrees = Number(value)
-                rotation[2] = webglUtils.degreesToRadians(angleInDegrees)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'X Translation:',
-            {maxValue: 300, currentValue: translation[0]},
-            value => {
-                translation[0] = Number(value)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Y Translation:',
-            {maxValue: 200, currentValue: translation[1]},
-            value => {
-                translation[1] = Number(value)
-                redraw()
-            }
-        ),
-        webglUtils.addSlider(
-            'Z Translation:',
-            {maxValue: 200, currentValue: translation[2]},
-            value => {
-                translation[2] = Number(value)
-                redraw()
-            }
-        )
+       webglUtils.addSlider(
+        'Camera angle:',
+        {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1},
+        value => {
+            cameraAngleRadians = webglUtils.degreesToRadians(Number(value))
+            redraw()
+        }
+    )
     ];
     sliders.forEach((value) => {
         ui_section.appendChild(value)
