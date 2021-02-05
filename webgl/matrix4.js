@@ -1,57 +1,88 @@
 
-export function translation(m, tx, ty, tz) {
-        return multiply(m, [
-            1,  0,  0,  0,
-            0,  1,  0,  0,
-            0,  0,  1,  0,
-            tx, ty, tz, 1,
-        ]);
-    };
+export function pretty_repr(m) {
+    let out = ""
+    for (let i = 0; i < 4; ++i) {
+        for (let j = 0; j < 4; ++j) {
+            out += m[j + 4 * i] + " "
+        }
+        out += "\n"
+    }
+    return out
+}
 
-export function xRotation(m, radians) {
+export function translation(tx, ty, tz) {
+    return [
+        1,  0,  0,  0,
+        0,  1,  0,  0,
+        0,  0,  1,  0,
+        tx, ty, tz, 1,
+    ];
+};
+
+export function translate(m, tx, ty, tz) {
+    return multiply(m, translation(tx, ty, tz));
+};
+
+export function xRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
 
-    return multiply(m, [
+    return [
         1,  0,  0,  0,
         0,  c,  s,  0,
         0, -s,  c,  0,
         0,  0,  0,  1,
-    ]);
+    ];
 };
 
-export function yRotation(m, radians) {
+export function yRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
 
-    return multiply(m, [
+    return [
         c,  0, -s,  0,
         0,  1,  0,  0,
         s,  0,  c,  0,
         0,  0,  0,  1,
-    ]);
+    ];
 };
 
-export function zRotation(m, radians) {
+export function zRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
 
-    return multiply(m, [
+    return [
         c,  s,  0,  0,
        -s,  c,  0,  0,
         0,  0,  1,  0,
         0,  0,  0,  1,
-    ]);
+    ];
 };
 
-export function scaling(m, sx, sy, sz) {
-    return multiply(m, [
+export function xRotate(m, radians) {
+    return multiply(m, xRotation(radians));
+};
+
+export function yRotate(m, radians) {
+    return multiply(m, yRotation(radians));
+};
+
+export function zRotate(m, radians) {
+    return multiply(m, zRotation(radians));
+};
+
+export function scaling(sx, sy, sz) {
+    return [
         sx,  0,  0,  0,
         0,  sy,  0,  0,
         0,   0,  sz, 0,
         0,   0,  0,  1,
-    ]);
+    ];
 };
+
+export function scale(m, sx, sy, sz) {
+    return multiply(m, scaling(sx, sy, sz))
+}
 
 export function identity() {
     return [

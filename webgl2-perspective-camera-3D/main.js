@@ -148,8 +148,8 @@ function setGeometry(gl) {
     // We could do by changing all the values above but I'm lazy.
     // We could also do it with a matrix at draw time but you should
     // never do stuff at draw time if you can do it at init time.
-    var matrix = m4.xRotation(m4.identity(), Math.PI);
-    matrix = m4.translation(matrix, -50, -75, -15);
+    var matrix = m4.xRotation(Math.PI);
+    matrix = m4.translate(matrix, -50, -75, -15);
 
     for (var i = 0; i < geoData.length; i += 3) {
         var vector = m4.transformVector(matrix, [geoData[i + 0], geoData[i + 1], geoData[i + 2], 1]);
@@ -337,14 +337,17 @@ function drawScene(gl, vao, position, data) {
     let zFarPlane = 2000;
     let projectionMatrix = m4.perspective(data.fieldOfViewRadians, aspect, zNearPlane, zFarPlane)
 
-
     // camera trick; we create an cameraMatrix moves this the way we want, and
     // compute the inverse to get the movement of how everything will be moved
     // relative to the camera if that camera movement was done
-    let cameraMatrix = m4.yRotation(m4.identity(), data.cameraAngleRadians)
-    cameraMatrix = m4.translation(cameraMatrix, 0, 0, radius * 1.5);
+    let cameraMatrix = m4.yRotation(data.cameraAngleRadians)
+
+    cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 1.5);
+
     let viewMatrix = m4.inverse(cameraMatrix);
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+
+
 
     // let draw nFs F in a circle
     for (let i = 0; i < nFs; ++i) {
@@ -353,7 +356,7 @@ function drawScene(gl, vao, position, data) {
         let x = Math.cos(angle) * radius;
         let z = Math.sin(angle) * radius;
 
-        let matrix = m4.translation(viewProjectionMatrix, x, 0, z);
+        let matrix = m4.translate(viewProjectionMatrix, x, 0, z);
 
         gl.uniformMatrix4fv(position.transformPtr, false, matrix);
 
@@ -379,9 +382,6 @@ function main(vertexShaderSource, fragmentShaderSource) {
 
     const gl = webglUtils.newWebGL2Context('#canvas')
 
-    let translation = [-150, 0, -360]
-    let rotation = [webglUtils.degreesToRadians(190), webglUtils.degreesToRadians(40), webglUtils.degreesToRadians(30)]
-    let scale = [1, 1, 1]
     let fieldOfViewRadians = webglUtils.degreesToRadians(60)
     let cameraAngleRadians = webglUtils.degreesToRadians(0)
 
