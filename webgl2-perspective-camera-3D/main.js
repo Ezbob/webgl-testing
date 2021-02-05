@@ -341,13 +341,25 @@ function drawScene(gl, vao, position, data) {
     // compute the inverse to get the movement of how everything will be moved
     // relative to the camera if that camera movement was done
     let cameraMatrix = m4.yRotation(data.cameraAngleRadians)
+    cameraMatrix = m4.translate(cameraMatrix, 0, 50, radius * 1.5);
 
-    cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 1.5);
+    let fPosition = [radius, 0, 0];
 
+    // camera row from camera matrix
+    let cameraPos = [
+        cameraMatrix[12],
+        cameraMatrix[13],
+        cameraMatrix[14]
+    ];
+
+    let up = [0, 1, 0];
+
+    // make the camera look at an F at fPosition  twelve o'clock
+    cameraMatrix = m4.lookAt(cameraPos, fPosition, up);
+
+    // now compute the view matrix which how the world inside the frustum will look
     let viewMatrix = m4.inverse(cameraMatrix);
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
-
-
 
     // let draw nFs F in a circle
     for (let i = 0; i < nFs; ++i) {

@@ -10,6 +10,45 @@ export function pretty_repr(m) {
     return out
 }
 
+export function cross(a, b) {
+    return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+    ]
+}
+
+export function substractVector(a, b) {
+    return [
+        a[0] - b[0],
+        a[1] - b[1],
+        a[2] - b[2]
+    ]
+}
+
+export function normalizeVector(v) {
+    let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+
+    if (length > 0.000001) {
+        return [ v[0] / length, v[1] / length, v[2] / length];
+    } else {
+        return [0, 0, 0];
+    }
+}
+
+export function lookAt(cameraPos, target, up) {
+    let zAxis = normalizeVector(substractVector(cameraPos, target));
+    let xAxis = normalizeVector(cross(up, zAxis));
+    let yAxis = normalizeVector(cross(zAxis, xAxis))
+
+    return [
+        xAxis[0],     xAxis[1],     xAxis[2],     0,
+        yAxis[0],     yAxis[1],     yAxis[2],     0,
+        zAxis[0],     zAxis[1],     zAxis[2],     0,
+        cameraPos[0], cameraPos[1], cameraPos[2], 1,
+    ]
+}
+
 export function translation(tx, ty, tz) {
     return [
         1,  0,  0,  0,
