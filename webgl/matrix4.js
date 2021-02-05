@@ -10,7 +10,7 @@ export function pretty_repr(m) {
     return out
 }
 
-export function cross(a, b) {
+function cross(a, b) {
     return [
         a[1] * b[2] - a[2] * b[1],
         a[2] * b[0] - a[0] * b[2],
@@ -18,7 +18,7 @@ export function cross(a, b) {
     ]
 }
 
-export function subtractVector(a, b) {
+function subtractVector(a, b) {
     return [
         a[0] - b[0],
         a[1] - b[1],
@@ -26,7 +26,7 @@ export function subtractVector(a, b) {
     ]
 }
 
-export function normalizeVector(v) {
+function normalizeVector(v) {
     let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
 
     if (length > 0.000001) {
