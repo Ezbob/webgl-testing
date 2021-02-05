@@ -18,7 +18,7 @@ export function cross(a, b) {
     ]
 }
 
-export function substractVector(a, b) {
+export function subtractVector(a, b) {
     return [
         a[0] - b[0],
         a[1] - b[1],
@@ -37,7 +37,7 @@ export function normalizeVector(v) {
 }
 
 export function lookAt(cameraPos, target, up) {
-    let zAxis = normalizeVector(substractVector(cameraPos, target));
+    let zAxis = normalizeVector(subtractVector(cameraPos, target));
     let xAxis = normalizeVector(cross(up, zAxis));
     let yAxis = normalizeVector(cross(zAxis, xAxis))
 
