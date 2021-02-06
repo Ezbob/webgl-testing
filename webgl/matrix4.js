@@ -1,5 +1,11 @@
+//@ts-check
 
+/**
+ * pretty print matrix of a matrix
+ * @param {number[]} m 
+ */
 export function pretty_repr(m) {
+
     let out = ""
     for (let i = 0; i < 4; ++i) {
         for (let j = 0; j < 4; ++j) {
@@ -10,6 +16,11 @@ export function pretty_repr(m) {
     return out
 }
 
+/**
+ * cross product of 3d vector with another 3d vector
+ * @param {number[]} a
+ * @param {number[]} b
+ */
 function cross(a, b) {
     return [
         a[1] * b[2] - a[2] * b[1],
@@ -18,6 +29,11 @@ function cross(a, b) {
     ]
 }
 
+/**
+ * subtract an 3d vector with another
+ * @param {number[]} a
+ * @param {number[]} b
+ */
 function subtractVector(a, b) {
     return [
         a[0] - b[0],
@@ -26,6 +42,10 @@ function subtractVector(a, b) {
     ]
 }
 
+/**
+ * normalize an 3d vector
+ * @param {number[]} v
+ */
 function normalizeVector(v) {
     let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
 
@@ -36,6 +56,12 @@ function normalizeVector(v) {
     }
 }
 
+/**
+ * 
+ * @param {number[]} cameraPos 
+ * @param {number[]} target 
+ * @param {number[]} up 
+ */
 export function lookAt(cameraPos, target, up) {
     let zAxis = normalizeVector(subtractVector(cameraPos, target));
     let xAxis = normalizeVector(cross(up, zAxis));
@@ -49,6 +75,12 @@ export function lookAt(cameraPos, target, up) {
     ]
 }
 
+/**
+ * Returns an translation 4x4 matrix
+ * @param {number} tx 
+ * @param {number} ty 
+ * @param {number} tz 
+ */
 export function translation(tx, ty, tz) {
     return [
         1,  0,  0,  0,
@@ -58,10 +90,21 @@ export function translation(tx, ty, tz) {
     ];
 };
 
+/**
+ * translate m using an matrix
+ * @param {Array} m
+ * @param {number} tx 
+ * @param {number} ty 
+ * @param {number} tz 
+ */
 export function translate(m, tx, ty, tz) {
     return multiply(m, translation(tx, ty, tz));
 };
 
+/**
+ * x axis rotation matrix
+ * @param {number} radians 
+ */
 export function xRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
@@ -74,6 +117,10 @@ export function xRotation(radians) {
     ];
 };
 
+/**
+ * y axis rotation matrix
+ * @param {number} radians 
+ */
 export function yRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
@@ -86,6 +133,10 @@ export function yRotation(radians) {
     ];
 };
 
+/**
+ * z axis rotation matrix
+ * @param {number} radians 
+ */
 export function zRotation(radians) {
     let c = Math.cos(radians)
     let s = Math.sin(radians)
@@ -98,18 +149,39 @@ export function zRotation(radians) {
     ];
 };
 
+/**
+ * Rotate m around the x axis
+ * @param {number[]} m
+ * @param {number} radians 
+ */
 export function xRotate(m, radians) {
     return multiply(m, xRotation(radians));
 };
 
+/**
+ * Rotate m around the y axis
+ * @param {number[]} m
+ * @param {number} radians 
+ */
 export function yRotate(m, radians) {
     return multiply(m, yRotation(radians));
 };
 
+/**
+ * Rotate m around the y axis
+ * @param {number[]} m
+ * @param {number} radians 
+ */
 export function zRotate(m, radians) {
     return multiply(m, zRotation(radians));
 };
 
+/**
+ * Return a scaling matrix
+ * @param {number} sx
+ * @param {number} sy
+ * @param {number} sz
+ */
 export function scaling(sx, sy, sz) {
     return [
         sx,  0,  0,  0,
@@ -119,10 +191,20 @@ export function scaling(sx, sy, sz) {
     ];
 };
 
+/**
+ * Scale m by sx, sy and sz
+ * @param {number[]} m
+ * @param {number} sx
+ * @param {number} sy
+ * @param {number} sz
+ */
 export function scale(m, sx, sy, sz) {
     return multiply(m, scaling(sx, sy, sz))
 }
 
+/**
+ * The identity matrix
+ */
 export function identity() {
     return [
         1, 0, 0, 0,
@@ -132,6 +214,11 @@ export function identity() {
     ];
 };
 
+/**
+ * Multiply 4x4 matrix by another 4x4 matrix
+ * @param {number[]} a first matrix
+ * @param {number[]} b second matrix
+ */
 export function multiply(a, b) {
     let b00 = b[0 * 4 + 0];
     let b01 = b[0 * 4 + 1];
@@ -219,15 +306,13 @@ export function orthographic(left, right, bottom, top, near, far) {
     ];
 }
 
-export function makeZToWMatrix(fudgeFactor) {
-    return [
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, fudgeFactor,
-        0, 0, 0, 1,
-    ]
-}
-
+/**
+ * Converts coordinates from a 3D frustum into clip space
+ * @param {number} fieldOfViewInRadians angle in radians that determines how "wide" the frustum is
+ * @param {number} aspect aspect ratio, usually just based on the canvas width/height ratio
+ * @param {number} near depth z coordinate of the front plane, so this min z distance before things gets clipped 
+ * @param {number} far depth z coordinate of the back plane. Any object after this gets clipped
+ */
 export function perspective(fieldOfViewInRadians, aspect, near, far) {
     let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians)
     let rangeInv = 1.0 / (near - far)
@@ -240,6 +325,11 @@ export function perspective(fieldOfViewInRadians, aspect, near, far) {
     ];
 }
 
+/**
+ * Compute the inverse of a 4x4 matrix. Because the 4x4 matrix is square 
+ * there should be an inverse matrix
+ * @param {number[]} m a 4x4 matrix
+ */
 export function inverse(m) {
     var m00 = m[0 * 4 + 0];
     var m01 = m[0 * 4 + 1];
@@ -325,6 +415,11 @@ export function inverse(m) {
     ];
 }
 
+/**
+ * Multiply applies an vector to a matrix.
+ * @param {number[]} m 4x4 matrix
+ * @param {number[]} v 4n vector
+ */
 export function transformVector(m, v) {
 
     let dst = [];
