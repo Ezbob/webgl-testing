@@ -310,11 +310,11 @@ function drawScene(gl, vao, position, data) {
     let far = 2000 // z of the bottom plane of the view frustum
     let matrix = m4.perspective(data.fieldOfViewRadians, aspect, near, far)
     //matrix = m4.multiply(matrix, m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400))
-    matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
-    matrix = m4.xRotation(matrix, data.rotation[0])
-    matrix = m4.yRotation(matrix, data.rotation[1])
-    matrix = m4.zRotation(matrix, data.rotation[2])
-    matrix = m4.scaling(matrix, data.scale[0], data.scale[1], data.scale[2])
+    matrix = m4.translate(matrix, data.translation[0], data.translation[1], data.translation[2])
+    matrix = m4.xRotate(matrix, data.rotation[0])
+    matrix = m4.yRotate(matrix, data.rotation[1])
+    matrix = m4.zRotate(matrix, data.rotation[2])
+    matrix = m4.scale(matrix, data.scale[0], data.scale[1], data.scale[2])
 
     gl.uniformMatrix4fv(position.transformPtr, false, matrix)
 
@@ -399,7 +399,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'X Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
+            {minValue: 1, maxValue: 6, stepValue: 0.1, currentValue: 1},
             value => {
                 scale[0] = Number(value)
                 redraw()
@@ -407,7 +407,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Y Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
+            {minValue: 1, maxValue: 6, stepValue: 0.1, currentValue: 1},
             value => {
                 scale[1] = Number(value)
                 redraw()
@@ -415,7 +415,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Z Scale:',
-            {minValue: -3, maxValue: 3, stepValue: 0.1, currentValue: 1},
+            {minValue: 1, maxValue: 6, stepValue: 0.1, currentValue: 1},
             value => {
                 scale[2] = Number(value)
                 redraw()
@@ -423,7 +423,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'X Rotation:',
-            {minValue: 0, maxValue: 360},
+            {minValue: 0, maxValue: 360, currentValue: webglUtils.radiansToDegrees(rotation[0])},
             value => {
                 let angleInDegrees = Number(value)
                 rotation[0] = webglUtils.degreesToRadians(angleInDegrees)
@@ -432,7 +432,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Y Rotation:',
-            {minValue: 0, maxValue: 360},
+            {minValue: 0, maxValue: 360, currentValue: webglUtils.radiansToDegrees(rotation[1])},
             value => {
                 let angleInDegrees = Number(value)
                 rotation[1] = webglUtils.degreesToRadians(angleInDegrees)
@@ -441,7 +441,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Z Rotation:',
-            {minValue: 0, maxValue: 360},
+            {minValue: 0, maxValue: 360, currentValue: webglUtils.radiansToDegrees(rotation[2])},
             value => {
                 let angleInDegrees = Number(value)
                 rotation[2] = webglUtils.degreesToRadians(angleInDegrees)
@@ -466,7 +466,7 @@ function main(vertexShaderSource, fragmentShaderSource) {
         ),
         webglUtils.addSlider(
             'Z Translation:',
-            {maxValue: 200, currentValue: translation[2]},
+            {minValue: -1500, maxValue: 0, currentValue: translation[2]},
             value => {
                 translation[2] = Number(value)
                 redraw()

@@ -313,11 +313,11 @@ function drawScene(gl, vao, position, data) {
     let far = -400
 
     let matrix = m4.orthographic(left, right, bottom, top, near, far)
-    matrix = m4.translation(matrix, data.translation[0], data.translation[1], data.translation[2])
-    matrix = m4.xRotation(matrix, data.rotation[0])
-    matrix = m4.yRotation(matrix, data.rotation[1])
-    matrix = m4.zRotation(matrix, data.rotation[2])
-    matrix = m4.scaling(matrix, data.scale[0], data.scale[1], data.scale[2])
+    matrix = m4.translate(matrix, data.translation[0], data.translation[1], data.translation[2])
+    matrix = m4.xRotate(matrix, data.rotation[0])
+    matrix = m4.yRotate(matrix, data.rotation[1])
+    matrix = m4.zRotate(matrix, data.rotation[2])
+    matrix = m4.scale(matrix, data.scale[0], data.scale[1], data.scale[2])
 
     gl.uniformMatrix4fv(position.transformPtr, false, matrix)
 
