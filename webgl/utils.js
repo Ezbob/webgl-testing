@@ -274,3 +274,79 @@ export function degreesToRadians(degree) {
 export function radiansToDegrees(radians) {
     return radians * 180 / Math.PI
 }
+
+/* More abstractions that helps with attribute loading */
+
+class MalformedSchemaError extends Error {}
+
+function validateSchema(schema) {
+    const isUndefined = a => typeof a == "undefined" || a === null;
+
+    for (let entryName in schema) {
+        const schemaEntry = schema[entryName] 
+        if (isUndefined(schemaEntry.arity)) throw new MalformedSchemaError(`'arity' field is missing for entry: '${entryName}'`)
+        if (isUndefined(schemaEntry.type)) throw new MalformedSchemaError(`'type' field is missing for entry: '${entryName}'`)
+        if (isUndefined(schemaEntry.data)) throw new MalformedSchemaError(`'data' field is missing for entry: '${entryName}'`)
+    }
+}
+
+/**
+ * 
+ * @param {WebGL2RenderingContext} gl 
+ * @param {WebGLVertexArrayObject} vao 
+ * @param {object} schema 
+ */
+export function createBufferSets(gl, vao, schema) {
+    gl.bindVertexArray(vao)
+
+    let bufferSet = {}
+    for (let bufferName in schema) {
+        let buffer = gl.createBuffer()
+
+        let dict = schema[bufferName]
+        let hint = dict.hint ? dict.hint : gl.STATIC_DRAW;
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, dict.data, hint)
+        bufferSet[bufferName] = buffer
+    }
+    return bufferSet
+}
+
+/**
+ * 
+ * @param {WebGL2RenderingContext} gl
+ * @param {WebGl2Program | WebGLProgram} program
+ * @param {WebGLVertexArrayObject} vao
+ * @param {object} schema
+ */
+export function enableAttributes(gl, program, vao, schema, bufferSet) {
+    gl.bindVertexArray(vao)
+
+    for (let attributeName in schema) {
+        let attributeLocation = program.getAttributeLocation(attributeName)
+        let buffer = bufferSet[attributeName]
+        let schemaEntry = schema[attributeName]
+
+        let stride = schemaEntry.stride ? schemaEntry.stride : 0
+        let offset = schemaEntry.offset ? schemaEntry.offset : 0
+        let normalized = schemaEntry.normalized ? schemaEntry.normalized : false;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.enableVertexAttribArray(attributeLocation)
+        gl.vertexAttribPointer(attributeLocation, schemaEntry.arity, schemaEntry.type, normalized, stride, offset)
+    }
+}
+
+/**
+ * 
+ * @param {WebGL2RenderingContext} gl
+ * @param {WebGl2Program | WebGLProgram} program
+ * @param {WebGLVertexArrayObject} vao
+ * @param {object} schema
+ */
+export function setupAttributes(gl, program, vao, schema) {
+    validateSchema(schema)
+    const bufferSet = createBufferSets(gl, vao, schema)
+    enableAttributes(gl, program, vao, schema, bufferSet)
+    return bufferSet;
+}
