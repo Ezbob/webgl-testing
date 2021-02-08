@@ -280,10 +280,12 @@ export function radiansToDegrees(radians) {
 class MalformedSchemaError extends Error {}
 
 function validateSchema(schema) {
-    const isUndefined = a => typeof a == "undefined" || a === null;
+    const isUndefined = a => typeof a === "undefined" || a === null;
+    const isNotAnObject = a => typeof a !== "object";
 
     for (let entryName in schema) {
-        const schemaEntry = schema[entryName] 
+        const schemaEntry = schema[entryName]
+        if (isNotAnObject(schemaEntry)) throw new MalformedSchemaError(`Entry: ${entryName} is not an object`)
         if (isUndefined(schemaEntry.arity)) throw new MalformedSchemaError(`'arity' field is missing for entry: '${entryName}'`)
         if (isUndefined(schemaEntry.type)) throw new MalformedSchemaError(`'type' field is missing for entry: '${entryName}'`)
         if (isUndefined(schemaEntry.data)) throw new MalformedSchemaError(`'data' field is missing for entry: '${entryName}'`)
