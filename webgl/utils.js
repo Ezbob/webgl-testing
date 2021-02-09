@@ -196,6 +196,7 @@ export class WebGl2Program {
     }
 }
 
+
 let sliderIds = 0
 
 export function addSlider(labelText, inputFieldValues, inputHandler) {
@@ -253,6 +254,18 @@ export function addSlider(labelText, inputFieldValues, inputHandler) {
     container.appendChild(dataview)
 
     return container
+}
+
+/**
+ * @param {object} schema 
+ */
+export function setupSliders(schema) {
+    let ui_section = getUiSection()
+    for (let slider_text in schema) {
+        let entry = schema[slider_text]
+        let slider = addSlider(slider_text, entry, entry.handle)
+        ui_section.appendChild(slider)
+    }
 }
 
 export function getUiSection() {
@@ -317,7 +330,7 @@ export function createBufferSets(gl, vao, schema) {
 /**
  * 
  * @param {WebGL2RenderingContext} gl
- * @param {WebGl2Program | WebGLProgram} program
+ * @param {WebGLProgram} program
  * @param {WebGLVertexArrayObject} vao
  * @param {object} schema
  */
@@ -325,7 +338,7 @@ export function enableAttributes(gl, program, vao, schema, bufferSet) {
     gl.bindVertexArray(vao)
 
     for (let attributeName in schema) {
-        let attributeLocation = program.getAttributeLocation(attributeName)
+        let attributeLocation = gl.getAttribLocation(program, attributeName)
         let buffer = bufferSet[attributeName]
         let schemaEntry = schema[attributeName]
 

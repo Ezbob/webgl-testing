@@ -147,30 +147,6 @@ function getGeometry() {
     return geoData
 }
 
-/**
- * 
- * @param {WebGL2RenderingContext} gl 
- */
-function setGeometry(gl) {
-    // drawing an F out of three bawxes
-
-    const geoData = new Float32Array(getGeometry());
-
-    // Center the F around the origin and Flip it around. We do this because
-    // we're in 3D now with and +Y is up where as before when we started with 2D
-    // we had +Y as down.
-
-    // We could do by changing all the values above but I'm lazy.
-    // We could also do it with a matrix at draw time but you should
-    // never do stuff at draw time if you can do it at init time.
-
-
-    gl.bufferData(
-        gl.ARRAY_BUFFER,
-        geoData,
-        gl.STATIC_DRAW
-    );
-}
 
 function getColor() {
     return [
@@ -305,22 +281,13 @@ function getColor() {
 }
 
 /**
- * 
- * @param {WebGL2RenderingContext} gl 
- */
-function setColor(gl) {
-    gl.bufferData(gl.ARRAY_BUFFER,
-        new Uint8Array(getColor()),
-        gl.STATIC_DRAW
-    );
-}
-
-/**
  * scene drawing. the vertex shader translates the F, while input data remains the same
  * @param {WebGL2RenderingContext} gl 
  * @param {WebGLVertexArrayObject} vao 
  */
-function drawScene(gl, vao, position, data) {
+function drawScene(gl, program, vao, position, data) {
+
+    gl.useProgram(program)
 
     gl.enable(gl.CULL_FACE) // only draw front-facing triangles
         // a front facing triangle is triangle in which vertices are
@@ -405,9 +372,9 @@ async function main() {
     let fieldOfViewRadians = webglUtils.degreesToRadians(60)
     let cameraAngleRadians = webglUtils.degreesToRadians(0)
 
-    const program = new webglUtils.WebGl2Program(gl, vertexShaderSource, fragmentShaderSource)
+    const program = webglUtils.newProgramFromSources(gl, vertexShaderSource, fragmentShaderSource)
 
-    const transformPtr = program.getUniformLocation("u_transform")
+    const transformPtr = gl.getUniformLocation(program, "u_transform")
 
     const vao = gl.createVertexArray()
 
@@ -420,7 +387,7 @@ async function main() {
 
     /* drawing and ui  */
     const redraw = () => {
-        drawScene(gl, vao,
+        drawScene(gl, program, vao,
             {transformPtr},
             {cameraAngleRadians, fieldOfViewRadians}
         )
@@ -428,21 +395,16 @@ async function main() {
 
     redraw()
 
-    let ui_section = webglUtils.getUiSection()
+    const angle_converter = value => {
+        cameraAngleRadians = webglUtils.degreesToRadians(Number(value))
+        redraw()
+    }
 
-    let sliders = [
-       webglUtils.addSlider(
-        'Camera angle:',
-        {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1},
-        value => {
-            cameraAngleRadians = webglUtils.degreesToRadians(Number(value))
-            redraw()
-        }
-    )
-    ];
-    sliders.forEach((value) => {
-        ui_section.appendChild(value)
-    })
+    const sliders = {
+        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1, handle: angle_converter}
+    }
+
+    webglUtils.setupSliders(sliders)
 }
 
 window.onload = main
