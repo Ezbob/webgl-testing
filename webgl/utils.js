@@ -320,8 +320,17 @@ export function createBufferSets(gl, vao, schema) {
 
         let dict = schema[bufferName]
         let hint = dict.hint ? dict.hint : gl.STATIC_DRAW;
+
+        let data = null
+        if (dict.data instanceof Array) {
+            let cons = glTypeToTypedArrayCons(gl, dict.type)
+            data = new cons(dict.data)
+        } else {
+            data = dict.data
+        }
+
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-        gl.bufferData(gl.ARRAY_BUFFER, dict.data, hint)
+        gl.bufferData(gl.ARRAY_BUFFER, data, hint)
         bufferSet[bufferName] = buffer
     }
     return bufferSet
@@ -364,4 +373,48 @@ export function setupAttributes(gl, program, vao, schema) {
     const bufferSet = createBufferSets(gl, vao, schema)
     enableAttributes(gl, program, vao, schema, bufferSet)
     return bufferSet;
+}
+
+/**
+ * Returns a matching TypedArray constructor for an WebGL type
+ * @param {WebGL2RenderingContext} gl 
+ * @param {number} gltype 
+ */
+export function glTypeToTypedArrayCons(gl, gltype) {
+    switch(gltype) {
+        case gl.BYTE:
+            return Int8Array;
+        case gl.UNSIGNED_BYTE:
+            return Uint8Array;
+        case gl.SHORT:
+            return Int16Array;
+        case gl.UNSIGNED_SHORT:
+            return Uint16Array;
+        case gl.INT:
+            return Int32Array;
+        case gl.UNSIGNED_INT:
+            return Uint32Array;
+        case gl.UNSIGNED_SHORT_4_4_4_4:
+            return Uint16Array;
+        case gl.UNSIGNED_SHORT_5_5_5_1:
+            return Uint16Array;
+        case gl.UNSIGNED_SHORT_5_6_5:
+            return Uint16Array;
+        case gl.FLOAT:
+            return Float32Array;
+        case gl.HALF_FLOAT:
+            return Uint16Array;
+        case gl.UNSIGNED_INT_10F_11F_11F_REV:
+            return Uint32Array;
+        case gl.UNSIGNED_INT_2_10_10_10_REV:
+            return Uint32Array;
+        case gl.UNSIGNED_INT_5_9_9_9_REV:
+            return Uint32Array;
+        case gl.FLOAT_32_UNSIGNED_INT_24_8_REV:
+            return Uint32Array;
+        case gl.UNSIGNED_INT_24_8:
+            return Uint32Array;
+        default:
+            throw new Error("Cons for GLType not found")
+    }
 }

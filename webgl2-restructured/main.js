@@ -1,6 +1,5 @@
 import * as webglUtils from '../webgl/utils.js'
 import * as m4 from '../webgl/matrix4.js'
-import { projection } from '../webgl/matrix3.js';
 
 //@ts-check
 
@@ -330,10 +329,8 @@ function drawScene(gl, program, vao, position, data) {
         cameraMatrix[14]
     ];
 
-    let up = [0, 1, 0];
-
     // make the camera look at an F at fPosition  twelve o'clock
-    cameraMatrix = m4.lookAt(cameraPos, fPosition, up);
+    cameraMatrix = m4.lookAt(cameraPos, fPosition);
 
     // now compute the view matrix which how the world inside the frustum will look
     let viewMatrix = m4.inverse(cameraMatrix);
@@ -378,12 +375,10 @@ async function main() {
 
     const vao = gl.createVertexArray()
 
-    const attributes = {
-        a_position: { data: new Float32Array(getGeometry()), hint: gl.STATIC_DRAW, arity: 3, type: gl.FLOAT, normalized: false },
-        a_color: { data: new Uint8Array(getColor()), hint: gl.STATIC_DRAW, arity: 3, type: gl.UNSIGNED_BYTE, normalized: true }
-    };
-
-    webglUtils.setupAttributes(gl, program, vao, attributes)
+    webglUtils.setupAttributes(gl, program, vao, {
+        a_position: { data: getGeometry(), arity: 3, type: gl.FLOAT },
+        a_color: { data: getColor(), arity: 3, type: gl.UNSIGNED_BYTE, normalized: true }
+    });
 
     /* drawing and ui  */
     const redraw = () => {
@@ -400,11 +395,9 @@ async function main() {
         redraw()
     }
 
-    const sliders = {
+    webglUtils.setupSliders({
         "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1, handle: angle_converter}
-    }
-
-    webglUtils.setupSliders(sliders)
+    })
 }
 
 window.onload = main
