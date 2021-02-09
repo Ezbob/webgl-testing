@@ -366,75 +366,49 @@ async function main() {
     let rotationLimits = {minValue: 0, maxValue: 360}
     let translationLimits = {minValue: 0, maxValue: 300}
 
+    let numberHandler = (name, index) => value => {
+        state[name][index] = Number(value)
+        redraw()
+    }
+
+    let angleHandler = (name, index) => value => {
+        state[name][index] = webglUtils.degreesToRadians(Number(value))
+        redraw()
+    }
+
     webglUtils.setupSliders({
-        'X Scale:': {
-            ...scaleValues,
-            handle: value => {
-                state.scale[0] = Number(value)
-                redraw()
-            }
-        },
-        'Y Scale:': {
-            ...scaleValues,
-            handle: value => {
-                state.scale[1] = Number(value)
-                redraw()
-            }
-        },
-        'Z Scale:': {
-            ...scaleValues,
-            handle: value => {
-                state.scale[2] = Number(value)
-                redraw()
-            }
-        },
+        'X Scale:': { ...scaleValues, handle: numberHandler("scale", 0) },
+        'Y Scale:': { ...scaleValues, handle: numberHandler("scale", 1) },
+        'Z Scale:': { ...scaleValues, handle: numberHandler("scale", 2) },
         'X Rotation:': {
             ...rotationLimits,
-            currentValue: state.rotation[0],
-            handle: value => {
-                state.rotation[0] = webglUtils.degreesToRadians(Number(value))
-                redraw()
-            }
+            currentValue: webglUtils.radiansToDegrees(state.rotation[0]),
+            handle: angleHandler("rotation", 0)
         },
         'Y Rotation:': {
             ...rotationLimits,
-            currentValue: state.rotation[1],
-            handle: value => {
-                state.rotation[1] = webglUtils.degreesToRadians(Number(value))
-                redraw()
-            }
+            currentValue: webglUtils.radiansToDegrees(state.rotation[1]),
+            handle: angleHandler("rotation", 1)
         },
         'Z Rotation:': {
             ...rotationLimits,
-            currentValue: state.rotation[2],
-            handle: value => {
-                state.rotation[2] = webglUtils.degreesToRadians(Number(value))
-                redraw()
-            }
+            currentValue: webglUtils.radiansToDegrees(state.rotation[2]),
+            handle: angleHandler("rotation", 2)
         },
         'X Translation:': {
             ...translationLimits,
             currentValue: state.translation[0],
-            handle: value => {
-                state.translation[0] = Number(value)
-                redraw()
-            }
+            handle: numberHandler("translation", 0)
         },
         'Y Translation:': {
             ...translationLimits,
             currentValue: state.translation[1],
-            handle: value => {
-                state.translation[1] = Number(value)
-                redraw()
-            }
+            handle: numberHandler("translation", 1)
         },
         'Z Translation:': {
             ...translationLimits,
             currentValue: state.translation[2],
-            handle: value => {
-                state.translation[2] = Number(value)
-                redraw()
-            }
+            handle: numberHandler("translation", 2)
         }
     });
 }
