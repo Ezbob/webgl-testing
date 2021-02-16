@@ -306,10 +306,29 @@ function validateSchema(schema) {
 }
 
 /**
+ * @typedef {(
+ *   {[buffer_name: string]: {
+ *         type: number,
+ *         arity: number,
+ *         data: Array<Number> | Float32Array | Int32Array | Uint32Array,
+ *         hint?: number,
+ *         stride?: number,
+ *         offset?: number,
+ *         normalized?: boolean
+ *    }}
+ * )} AttributeSchema
+ * 
+ * @typedef {({ [buffer_name: string]: WebGLBuffer })} BufferSet
+ * 
+ * @typedef {( {[uniform_name: string]: { location?: number, transpose?:boolean }} )} UniformSchema
+ */
+
+/**
  * 
  * @param {WebGL2RenderingContext} gl 
  * @param {WebGLVertexArrayObject} vao 
- * @param {object} schema 
+ * @param {AttributeSchema} schema 
+ * @returns { BufferSet }
  */
 export function createBufferSets(gl, vao, schema) {
     gl.bindVertexArray(vao)
@@ -336,12 +355,15 @@ export function createBufferSets(gl, vao, schema) {
     return bufferSet
 }
 
+
+
 /**
  * 
  * @param {WebGL2RenderingContext} gl
  * @param {WebGLProgram} program
  * @param {WebGLVertexArrayObject} vao
- * @param {object} schema
+ * @param { AttributeSchema } schema
+ * @param { BufferSet } bufferSet
  */
 export function enableAttributes(gl, program, vao, schema, bufferSet) {
     gl.bindVertexArray(vao)
@@ -362,11 +384,10 @@ export function enableAttributes(gl, program, vao, schema, bufferSet) {
 }
 
 /**
- * 
  * @param {WebGL2RenderingContext} gl
- * @param {WebGl2Program | WebGLProgram} program
+ * @param {WebGLProgram} program
  * @param {WebGLVertexArrayObject} vao
- * @param {object} schema
+ * @param {AttributeSchema} schema
  */
 export function setupAttributes(gl, program, vao, schema) {
     validateSchema(schema)
@@ -417,4 +438,44 @@ export function glTypeToTypedArrayCons(gl, gltype) {
         default:
             throw new Error("Cons for GLType not found")
     }
+}
+
+/**
+ * Returns a matching TypedArray constructor for an WebGL type
+ * @param {WebGL2RenderingContext} gl 
+ */
+export function typedArrayToGltype(gl, typeArrayInstance) {
+
+    if (typeArrayInstance instanceof Int8Array) {
+        return gl.BYTE
+    } else if (typeArrayInstance instanceof Uint8Array) {
+        return gl.UNSIGNED_BYTE
+    } else if (typeArrayInstance instanceof Int16Array) {
+        return gl.SHORT
+    } else if (typeArrayInstance instanceof Uint16Array) {
+        return gl.UNSIGNED_SHORT
+    } else if (typeArrayInstance instanceof Int32Array) {
+        return gl.INT
+    } else if (typeArrayInstance instanceof Uint32Array) {
+        return gl.UNSIGNED_INT
+    } else if (typeArrayInstance instanceof Float32Array) {
+        return gl.FLOAT
+    } else {
+        throw new Error("No match for type array instance")
+    }
+}
+
+/**
+ * 
+ * @param {WebGL2RenderingContext} gl 
+ * @param {WebGLProgram} program 
+ * @param {UniformSchema} schema
+ */
+export function setupUniforms(gl, program, schema) {
+   for (let uniform_name in schema) {
+       schema[uniform_name].location = gl.getUniformLocation(program, uniform_name)
+       schema[uniform_name].transpose = !!schema[uniform_name].transpose
+   }
+
+   return schema;
 }
