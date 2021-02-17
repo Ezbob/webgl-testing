@@ -444,29 +444,30 @@ function drawScene(gl, program, vao, uniforms, data) {
     let zFarPlane = 2000;
     let projectionMatrix = m4.perspective(data.fieldOfViewRadians, aspect, zNearPlane, zFarPlane)
 
-
-    let camera = [100, 150, 200];
+    let camera = [100, 150, 200]
     let target = [0, 35, 0]
-    //let up = [0, 1, 0]
     let cameraMatrix = m4.lookAt(camera, target)
-
     let viewMatrix = m4.inverse(cameraMatrix)
-
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
     let worldMatrix = m4.yRotation(data.cameraAngleRadians)
-
     worldMatrix = m4.scale(worldMatrix, data.scale[0], data.scale[1], data.scale[2])
+
     let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
 
+    // world inverse transpose matrix here makes it so that normal directions are preserved
+    // when we subject the F to non-uniform scaling (scaling one axis at a time)
     let worldInverseTransposeMatrix = m4.inverse(worldMatrix)
 
     gl.uniformMatrix4fv(uniforms.u_worldViewProjection.location, uniforms.u_worldViewProjection.transpose, worldViewProjectionMatrix)
 
+    // webgl can transpose the matrix for us to transpose is set to true here
     gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose.location, uniforms.u_worldInverseTranspose.transpose, worldInverseTransposeMatrix)
 
+    // coloring the F
     gl.uniform4fv(uniforms.u_color.location, [0.2, 1, 0.2, 1])
 
+    // setting the reverse direction (some vector that points to the light source) of the light source
     gl.uniform3fv(uniforms.u_reverseLightDirection.location, m4.normalize([0.5, 0.7, 1]))
 
     gl.drawArrays(gl.TRIANGLES, 0, 16 * 6)
@@ -483,9 +484,11 @@ async function main() {
 
     const gl = webglUtils.newWebGL2Context('#canvas')
 
-    let fieldOfViewRadians = webglUtils.degreesToRadians(60)
-    let cameraAngleRadians = webglUtils.degreesToRadians(0)
-    let scale = [ 1, 1, 1 ]
+    let data = {
+        fieldOfViewRadians: webglUtils.degreesToRadians(60),
+        cameraAngleRadians: webglUtils.degreesToRadians(0),
+        scale: [ 1, 1, 1 ]
+    };
 
     const program = webglUtils.newProgramFromSources(gl, vertexShaderSource, fragmentShaderSource)
 
@@ -505,26 +508,23 @@ async function main() {
 
     /* drawing and ui  */
     const redraw = () => {
-        drawScene(gl, program, vao,
-            uniforms,
-            {cameraAngleRadians, fieldOfViewRadians, scale}
-        )
+        drawScene(gl, program, vao, uniforms, data)
     }
 
     redraw()
 
     const angle_converter = value => {
-        cameraAngleRadians = webglUtils.degreesToRadians(Number(value))
+        data.cameraAngleRadians = webglUtils.degreesToRadians(Number(value))
         redraw()
     }
 
     const scale_converter = index => value => {
-        scale[index] = Number(value)
+        data.scale[index] = Number(value)
         redraw()
     }
 
     webglUtils.setupSliders({
-        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1, handle: angle_converter},
+        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: data.cameraAngleRadians, stepValue: 0.1, handle: angle_converter},
         "X scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(0)},
         "Y scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(1)},
         "Z scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(2)}
