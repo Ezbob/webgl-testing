@@ -419,8 +419,6 @@ function getColor() {
  */
 function drawScene(gl, program, vao, uniforms, data) {
 
-    gl.useProgram(program)
-
     gl.enable(gl.CULL_FACE) // only draw front-facing triangles
         // a front facing triangle is triangle in which vertices are
         // described in a counter-clockwise fashion 
@@ -433,10 +431,9 @@ function drawScene(gl, program, vao, uniforms, data) {
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // clear screen space with an transparent value
 
-    gl.bindVertexArray(vao)
+    gl.useProgram(program)
 
-    const radius = 200;
-    const nFs = 5;
+    gl.bindVertexArray(vao)
 
     // projection that puts stuff stuff in a frustum. The frustum is effectively a pyramid
     // with the pointy top cutoff by a rectangular plane. Doing this is important to avoid
@@ -457,9 +454,12 @@ function drawScene(gl, program, vao, uniforms, data) {
 
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-    let matrix = m4.yRotate(viewProjectionMatrix, data.cameraAngleRadians)
+    let worldMatrix = m4.yRotation(data.cameraAngleRadians)
+    let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
 
-    gl.uniformMatrix4fv(uniforms.u_transform.location, uniforms.u_transform.transpose, matrix)
+    gl.uniformMatrix4fv(uniforms.u_worldViewProjection.location, uniforms.u_worldViewProjection.transpose, worldViewProjectionMatrix)
+
+    gl.uniformMatrix4fv(uniforms.u_world.location, uniforms.u_world.transpose, worldMatrix)
 
     gl.uniform4fv(uniforms.u_color.location, [0.2, 1, 0.2, 1])
 
@@ -493,7 +493,8 @@ async function main() {
     });
 
     let uniforms = webglUtils.setupUniforms(gl, program, {
-        u_transform: {transpose: false},
+        u_world: {transpose: false},
+        u_worldViewProjection: {transpose: false},
         u_color: {},
         u_reverseLightDirection: {}
     })
