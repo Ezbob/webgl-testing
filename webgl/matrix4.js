@@ -21,7 +21,17 @@ export function pretty_repr(m) {
  * @param {number[]} a
  * @param {number[]} b
  */
-function cross(a, b) {
+export function dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+
+
+/**
+ * cross product of 3d vector with another 3d vector
+ * @param {number[]} a
+ * @param {number[]} b
+ */
+export function cross(a, b) {
     return [
         a[1] * b[2] - a[2] * b[1],
         a[2] * b[0] - a[0] * b[2],
@@ -34,7 +44,7 @@ function cross(a, b) {
  * @param {number[]} a
  * @param {number[]} b
  */
-function subtractVector(a, b) {
+export function subtractVector(a, b) {
     return [
         a[0] - b[0],
         a[1] - b[1],
@@ -46,7 +56,7 @@ function subtractVector(a, b) {
  * normalize an 3d vector
  * @param {number[]} v
  */
-function normalizeVector(v) {
+export function normalize(v) {
     let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
 
     if (length > 0.000001) {
@@ -63,9 +73,9 @@ function normalizeVector(v) {
  * @param {number[]} up 
  */
 export function lookAt(cameraPos, target, up = [0, 1, 0]) {
-    let zAxis = normalizeVector(subtractVector(cameraPos, target));
-    let xAxis = normalizeVector(cross(up, zAxis));
-    let yAxis = normalizeVector(cross(zAxis, xAxis))
+    let zAxis = normalize(subtractVector(cameraPos, target));
+    let xAxis = normalize(cross(up, zAxis));
+    let yAxis = normalize(cross(zAxis, xAxis))
 
     return [
         xAxis[0],     xAxis[1],     xAxis[2],     0,
@@ -439,14 +449,14 @@ export function transformVector(m, v) {
  * @param {number[]} dst 
  */
 export function transformPoint(m, v, dst = [0,0,0]) {
- var v0 = v[0];
- var v1 = v[1];
- var v2 = v[2];
- var d = v0 * m[0 * 4 + 3] + v1 * m[1 * 4 + 3] + v2 * m[2 * 4 + 3] + m[3 * 4 + 3];
+    var v0 = v[0];
+    var v1 = v[1];
+    var v2 = v[2];
+    var d = v0 * m[0 * 4 + 3] + v1 * m[1 * 4 + 3] + v2 * m[2 * 4 + 3] + m[3 * 4 + 3];
 
- dst[0] = (v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0] + m[3 * 4 + 0]) / d;
- dst[1] = (v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1] + m[3 * 4 + 1]) / d;
- dst[2] = (v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2] + m[3 * 4 + 2]) / d;
+    dst[0] = (v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0] + m[3 * 4 + 0]) / d;
+    dst[1] = (v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1] + m[3 * 4 + 1]) / d;
+    dst[2] = (v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2] + m[3 * 4 + 2]) / d;
 
- return dst;
+    return dst;
 }

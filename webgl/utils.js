@@ -18,11 +18,10 @@ export function newProgramFromSources(gl, vertexShaderSource, fragmentShaderSour
             case gl.VERTEX_SHADER:
                 throw new Error("Creating vertex shader failed: " + gl.getShaderInfoLog(shader))
             case gl.FRAGMENT_SHADER:
-                throw new Error("Creating vertex shader failed: " + gl.getShaderInfoLog(shader))
+                throw new Error("Creating fragment shader failed: " + gl.getShaderInfoLog(shader))
             default:
                 throw new Error("CreateShader reports: " + gl.getShaderInfoLog(shader))
             }
-            
         }
     }
 
@@ -38,7 +37,7 @@ export function newProgramFromSources(gl, vertexShaderSource, fragmentShaderSour
     if (success) {
         return program
     } else {
-        throw new Error("CreateProgram reports: " + gl.getShaderInfoLog(shader))
+        throw new Error("CreateProgram reports: " + gl.getProgramInfoLog(program))
     }
 }
 
