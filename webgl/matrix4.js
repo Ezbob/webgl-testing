@@ -86,6 +86,19 @@ export function lookAt(cameraPos, target, up = [0, 1, 0]) {
 }
 
 /**
+ * transpose an 4x4 matrix
+ * @param {number[]} m 
+ */
+export function transpose(m) {
+    return [
+        m[0], m[4], m[8], m[12],
+        m[1], m[5], m[9], m[13],
+        m[2], m[6], m[10], m[14],
+        m[3], m[7], m[11], m[15],
+    ]
+}
+
+/**
  * Returns an translation 4x4 matrix
  * @param {number} tx 
  * @param {number} ty 

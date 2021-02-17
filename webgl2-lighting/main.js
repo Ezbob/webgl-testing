@@ -455,11 +455,15 @@ function drawScene(gl, program, vao, uniforms, data) {
     let viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
     let worldMatrix = m4.yRotation(data.cameraAngleRadians)
+
+    worldMatrix = m4.scale(worldMatrix, data.scale[0], data.scale[1], data.scale[2])
     let worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
+
+    let worldInverseTransposeMatrix = m4.inverse(worldMatrix)
 
     gl.uniformMatrix4fv(uniforms.u_worldViewProjection.location, uniforms.u_worldViewProjection.transpose, worldViewProjectionMatrix)
 
-    gl.uniformMatrix4fv(uniforms.u_world.location, uniforms.u_world.transpose, worldMatrix)
+    gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose.location, uniforms.u_worldInverseTranspose.transpose, worldInverseTransposeMatrix)
 
     gl.uniform4fv(uniforms.u_color.location, [0.2, 1, 0.2, 1])
 
@@ -481,6 +485,7 @@ async function main() {
 
     let fieldOfViewRadians = webglUtils.degreesToRadians(60)
     let cameraAngleRadians = webglUtils.degreesToRadians(0)
+    let scale = [ 1, 1, 1 ]
 
     const program = webglUtils.newProgramFromSources(gl, vertexShaderSource, fragmentShaderSource)
 
@@ -488,12 +493,11 @@ async function main() {
 
     webglUtils.setupAttributes(gl, program, vao, {
         a_position: { data: getGeometry(), arity: 3, type: gl.FLOAT },
-        //a_color: { data: getColor(), arity: 3, type: gl.UNSIGNED_BYTE, normalized: true }
         a_normal: { data: getNormals(), arity: 3, type: gl.FLOAT }
     });
 
     let uniforms = webglUtils.setupUniforms(gl, program, {
-        u_world: {transpose: false},
+        u_worldInverseTranspose: {transpose: true},
         u_worldViewProjection: {transpose: false},
         u_color: {},
         u_reverseLightDirection: {}
@@ -503,7 +507,7 @@ async function main() {
     const redraw = () => {
         drawScene(gl, program, vao,
             uniforms,
-            {cameraAngleRadians, fieldOfViewRadians}
+            {cameraAngleRadians, fieldOfViewRadians, scale}
         )
     }
 
@@ -514,8 +518,16 @@ async function main() {
         redraw()
     }
 
+    const scale_converter = index => value => {
+        scale[index] = Number(value)
+        redraw()
+    }
+
     webglUtils.setupSliders({
-        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1, handle: angle_converter}
+        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: cameraAngleRadians, stepValue: 0.1, handle: angle_converter},
+        "X scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(0)},
+        "Y scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(1)},
+        "Z scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: scale_converter(2)}
     })
 }
 
