@@ -345,7 +345,7 @@ function drawScene(gl, program, vao, uniforms, data) {
 
         let matrix = m4.translate(viewProjectionMatrix, x, 0, z);
 
-        gl.uniformMatrix4fv(uniforms.u_transform.location, uniforms.u_transform.transpose, matrix);
+        gl.uniformMatrix4fv(uniforms.u_transform, false, matrix);
 
         let primitiveType = gl.TRIANGLES;
         let offset = 0;
@@ -378,9 +378,9 @@ async function main() {
         a_color: { data: getColor(), arity: 3, type: gl.UNSIGNED_BYTE, normalized: true }
     });
 
-    let uniforms = webglUtils.setupUniforms(gl, program, {
-        u_transform: {transpose: false}
-    })
+    let uniforms = webglUtils.setupUniforms(gl, program, [
+        "u_transform"
+    ])
 
     /* drawing and ui  */
     const redraw = () => {

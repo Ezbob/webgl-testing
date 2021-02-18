@@ -459,16 +459,16 @@ function drawScene(gl, program, vao, uniforms, data) {
     // when we subject the F to non-uniform scaling (scaling one axis at a time)
     let worldInverseTransposeMatrix = m4.inverse(worldMatrix)
 
-    gl.uniformMatrix4fv(uniforms.u_worldViewProjection.location, uniforms.u_worldViewProjection.transpose, worldViewProjectionMatrix)
+    gl.uniformMatrix4fv(uniforms.u_worldViewProjection, false, worldViewProjectionMatrix)
 
     // webgl can transpose the matrix for us to transpose is set to true here
-    gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose.location, uniforms.u_worldInverseTranspose.transpose, worldInverseTransposeMatrix)
+    gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose, true, worldInverseTransposeMatrix)
 
     // coloring the F
-    gl.uniform4fv(uniforms.u_color.location, [0.2, 1, 0.2, 1])
+    gl.uniform4fv(uniforms.u_color, [0.2, 1, 0.2, 1])
 
     // setting the reverse direction (some vector that points to the light source) of the light source
-    gl.uniform3fv(uniforms.u_reverseLightDirection.location, m4.normalize([0.5, 0.7, 1]))
+    gl.uniform3fv(uniforms.u_reverseLightDirection, m4.normalize([0.5, 0.7, 1]))
 
     gl.drawArrays(gl.TRIANGLES, 0, 16 * 6)
 }
@@ -499,12 +499,12 @@ async function main() {
         a_normal: { data: getNormals(), arity: 3, type: gl.FLOAT }
     });
 
-    let uniforms = webglUtils.setupUniforms(gl, program, {
-        u_worldInverseTranspose: {transpose: true},
-        u_worldViewProjection: {transpose: false},
-        u_color: {},
-        u_reverseLightDirection: {}
-    })
+    let uniforms = webglUtils.setupUniforms(gl, program, [
+        'u_worldInverseTranspose',
+        'u_worldViewProjection',
+        'u_color',
+        'u_reverseLightDirection'
+    ])
 
     /* drawing and ui  */
     const redraw = () => {

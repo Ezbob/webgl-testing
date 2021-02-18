@@ -471,13 +471,10 @@ export function typedArrayToGltype(gl, typeArrayInstance) {
  * @param {UniformSchema} schema
  */
 export function setupUniforms(gl, program, schema) {
-   let result = {}
-    for (let uniform_name in schema) {
-        result[uniform_name] = {
-            location: gl.getUniformLocation(program, uniform_name),
-            transpose: !!schema[uniform_name].transpose
-        }
-   }
+    let result = {}
+    for (let uniform_name of schema) {
+        result[uniform_name] = gl.getUniformLocation(program, uniform_name)
+    }
 
-   return result;
+    return result;
 }
