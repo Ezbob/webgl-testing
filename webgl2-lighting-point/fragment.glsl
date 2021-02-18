@@ -10,6 +10,9 @@ in vec3 v_surfaceToView;
 uniform vec4 u_color;
 uniform float u_shininess;
 
+uniform vec3 u_lightColor;
+uniform vec3 u_specularColor;
+
 out vec4 fragColoring;
 
 void main() {
@@ -30,7 +33,7 @@ void main() {
     fragColoring = u_color;
 
     // making the color component lighter or darker
-    fragColoring.rgb *= light;
+    fragColoring.rgb *= light * u_lightColor;
 
-    fragColoring.rgb += specular;
+    fragColoring.rgb += specular * u_specularColor;
 }

@@ -467,6 +467,10 @@ function drawScene(gl, program, vao, uniforms, data) {
 
     gl.uniformMatrix4fv(uniforms.u_world, false, worldMatrix)
 
+    gl.uniform3fv(uniforms.u_lightColor, m4.normalize([1, 0.6, 0.6]))
+
+    gl.uniform3fv(uniforms.u_specularColor, m4.normalize([1, 0.2, 0.2]))
+
     // camera needed for specular highlight
     gl.uniform3fv(uniforms.u_viewWorldPosition, camera)
 
@@ -517,7 +521,9 @@ async function main() {
         'u_color',
         'u_lightWorldPosition',
         'u_world',
-        'u_shininess'
+        'u_shininess',
+        'u_lightColor',
+        'u_specularColor'
     ])
 
     /* drawing and ui  */
