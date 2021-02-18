@@ -4,6 +4,7 @@ in vec4 a_position;
 in vec3 a_normal;
 
 uniform vec3 u_lightWorldPosition;
+uniform vec3 u_viewWorldPosition;
 
 uniform mat4 u_world;
 uniform mat4 u_worldViewProjection;
@@ -11,6 +12,7 @@ uniform mat4 u_worldInverseTranspose;
 
 out vec3 v_normal;
 out vec3 v_surfaceToLight;
+out vec3 v_surfaceToView;
 
 void main() {
   // tranform the geometry
@@ -24,4 +26,6 @@ void main() {
 
   // vector pointing from surfaces to the light source
   v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+  v_surfaceToView = u_viewWorldPosition - surfaceWorldPosition;
 }

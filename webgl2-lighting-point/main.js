@@ -467,6 +467,12 @@ function drawScene(gl, program, vao, uniforms, data) {
 
     gl.uniformMatrix4fv(uniforms.u_world, false, worldMatrix)
 
+    // camera needed for specular highlight
+    gl.uniform3fv(uniforms.u_viewWorldPosition, camera)
+
+    // shininess limits or expands the specular highlight
+    gl.uniform1f(uniforms.u_shininess, data.shininess)
+
     // coloring the F
     gl.uniform4fv(uniforms.u_color, [0.2, 1, 0.2, 1])
 
@@ -491,7 +497,8 @@ async function main() {
         fieldOfViewRadians: webglUtils.degreesToRadians(60),
         cameraAngleRadians: webglUtils.degreesToRadians(0),
         scale: [ 1, 1, 1 ],
-        lightSourcePosition: [ 20, 30, 60 ]
+        lightSourcePosition: [ 20, 30, 60 ],
+        shininess: 150
     };
 
     const program = webglUtils.newProgramFromSources(gl, vertexShaderSource, fragmentShaderSource)
@@ -506,9 +513,11 @@ async function main() {
     let uniforms = webglUtils.setupUniforms(gl, program, [
         'u_worldInverseTranspose',
         'u_worldViewProjection',
+        'u_viewWorldPosition',
         'u_color',
         'u_lightWorldPosition',
-        'u_world'
+        'u_world',
+        'u_shininess'
     ])
 
     /* drawing and ui  */
@@ -553,6 +562,16 @@ async function main() {
             stepValue: 1,
             currentValue: data.lightSourcePosition[2],
             handle: number_converter('lightSourcePosition')(2)
+        },
+        "Shininess: ": {
+            minValue: 1,
+            maxValue: 300,
+            stepValue: 1,
+            currentValue: data.shininess,
+            handle: value => {
+                data.shininess = Number(value)
+                redraw()
+            }
         }
     })
 }
