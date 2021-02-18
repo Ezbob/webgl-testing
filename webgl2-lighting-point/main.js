@@ -458,11 +458,12 @@ function drawScene(gl, program, vao, uniforms, data) {
     // world inverse transpose matrix here makes it so that normal directions are preserved
     // when we subject the F to non-uniform scaling (scaling one axis at a time)
     let worldInverseTransposeMatrix = m4.inverse(worldMatrix)
+    worldInverseTransposeMatrix = m4.transpose(worldInverseTransposeMatrix)
 
     gl.uniformMatrix4fv(uniforms.u_worldViewProjection, false, worldViewProjectionMatrix)
 
     // webgl can transpose the matrix for us to transpose is set to true here
-    gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose, true, worldInverseTransposeMatrix)
+    gl.uniformMatrix4fv(uniforms.u_worldInverseTranspose, false, worldInverseTransposeMatrix)
 
     gl.uniformMatrix4fv(uniforms.u_world, false, worldMatrix)
 
@@ -490,7 +491,7 @@ async function main() {
         fieldOfViewRadians: webglUtils.degreesToRadians(60),
         cameraAngleRadians: webglUtils.degreesToRadians(0),
         scale: [ 1, 1, 1 ],
-        lightSourcePosition: [ 20, 20, 60 ]
+        lightSourcePosition: [ 20, 30, 60 ]
     };
 
     const program = webglUtils.newProgramFromSources(gl, vertexShaderSource, fragmentShaderSource)
@@ -528,7 +529,7 @@ async function main() {
     }
 
     webglUtils.setupSliders({
-        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: data.cameraAngleRadians, stepValue: 0.1, handle: angle_converter},
+        "Camera angle: ": {minValue: -360, maxValue: 360, currentValue: data.cameraAngleRadians, stepValue: 1, handle: angle_converter},
         "X scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: number_converter('scale')(0)},
         "Y scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: number_converter('scale')(1)},
         "Z scale: ": {minValue: 1, maxValue: 3, stepValue: 0.1, handle: number_converter('scale')(2)},
